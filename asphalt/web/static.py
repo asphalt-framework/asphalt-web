@@ -1,0 +1,32 @@
+from pathlib import Path, PurePath
+from typing import Union, Optional, cast
+
+from asphalt.core.context import Context
+from asphalt.web.api import AbstractEndpoint, AbstractRouter
+from typeguard import check_argument_types
+
+from asphalt.web.request import BodyHTTPRequest
+
+
+class StaticFileEndpoint(AbstractEndpoint):
+    __slots__ = 'path'
+
+    def __init__(self, path: Path):
+        self.path = path
+
+    def begin_request(self, parent_ctx: Context, request: BodyHTTPRequest):
+        if request.method != 'GET':
+            raise HTTPMethodNotAllowed(request.method, ['GET'])
+
+
+class StaticFileRouter(AbstractRouter):
+    __slots__ = 'basedir'
+
+    def __init__(self, basedir: Union[str, Path]):
+        assert check_argument_types()
+        self.basedir = Path(basedir)
+
+    def resolve(self, request: BodyHTTPRequest, path: PurePath) -> Optional[AbstractEndpoint]:
+        final_path = cast(Path, self.basedir / path)
+        return StaticFileEndpoint(final_path) if final_path.is_file() else None
+

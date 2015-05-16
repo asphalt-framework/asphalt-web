@@ -1,0 +1,33 @@
+sudo: false
+
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+
+install: pip install tox-travis coveralls
+
+script: tox
+
+after_success: coveralls
+
+notifications:
+  irc:
+    channels:
+      - chat.freenode.net#asphalt
+    on_success: change
+    on_failure: change
+    use_notice: true
+    skip_join: true
+
+deploy:
+  provider: pypi
+  user: agronholm
+  password:
+    secure: n6V6c/CZoUaTNKNtSa6s/WE8UA7i8pOCF9HS6UtdUEdEnjEvWl1z7pLXp/oU9aJQzLX3N/MTtI9sn4hkvg/wShkNs8PWEoLjo1cG//Z1/mOK9coO1H1bNiFKnLfzVxlyUbevhooNqU13ebflO3R6sl08U2XUOoszeFh3mqw5/QcRQTIRYAYCHBdivgtPKiXxFBSiaH+ei81EUQc7BM1F2yQOT8S4dB+EpN8sqKKMmzfD3MvYquO2LZgxDS3RRxSSF977W8yqz7Z3fmqjOyd2YMhgV0hu1AJ3zRBzCetjyvgA9Je0j6U5mXSUjAKGneVo3z6kb+wWyyGEXFIv1AQM1UkKa6zAwXEjrVRQU1Eral87ovhkk0EfIUeCZQ/Cf1YggsStN0dSYkBcdqU9lv3C/Ja6EKc/E4gFiLr71TPIYoASAlO7Qx577bd3FLlbdZ2R7zwkD4sOoq0X+dA9Q9Eu8+lrXen2G6yjO0yWhJGyW5aGWoy2HaCJYN7X5qgMaoEMDYxk2t9hnEOipsyRA3AnsZJVquz/Mm7kmjBSIxIjju0RJm/N+1shd4QpRirpd1SD6caILqSVgrRxasLLMPwagth2ow7GFGELMbMwVuNYx0CJ6rQWUQFTptq6HcXhhwuzzfgCwyzxLTB6FtxYUk277hHn7GWmhOjbJ1yaUr6KrQ8=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: "3.5"
+    repo: asphalt-framework/asphalt-web
