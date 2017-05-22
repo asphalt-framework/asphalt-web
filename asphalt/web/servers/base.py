@@ -9,7 +9,7 @@ from asphalt.core import Context, resolve_reference
 from multidict import CIMultiDict
 from typeguard import check_argument_types
 
-from asphalt.web.api import AbstractRouter
+from asphalt.web.api import Router
 
 
 class BaseWebServer(metaclass=ABCMeta):
@@ -28,12 +28,12 @@ class BaseWebServer(metaclass=ABCMeta):
         ``port`` are ignored)
     """
 
-    def __init__(self, router: Union[AbstractRouter, str], host: Union[str, Sequence[str]] = None,
+    def __init__(self, router: Union[Router, str], host: Union[str, Sequence[str]] = None,
                  port: int = 8888, socket_path: Union[str, Path] = None, backlog: int = 100,
                  external_host: str = None, external_port: int = None,
                  external_prefix: str = None):
         assert check_argument_types()
-        self.router = resolve_reference(router)  # type: AbstractRouter
+        self.router = resolve_reference(router)  # type: Router
         self.host = host if isinstance(host, str) else tuple(host)
         self.port = port
         self.socket_path = str(socket_path) if socket_path else None
@@ -49,7 +49,7 @@ class BaseWebServer(metaclass=ABCMeta):
     async def start(self, parent_ctx: Context) -> None:
         self.parent_ctx = parent_ctx
         if isinstance(self.router, str):
-            self.router = await parent_ctx.request_resource(AbstractRouter, self.router)
+            self.router = await parent_ctx.request_resource(Router, self.router)
 
     async def shutdown(self, server, address) -> None:
         # Stop accepting new connections
@@ -65,7 +65,7 @@ class BaseWebServer(metaclass=ABCMeta):
 
 class BaseHTTPClientConnection(metaclass=ABCMeta):
     def __init__(self, transport: Union[ReadTransport, WriteTransport], parent_ctx: Context,
-                 router: AbstractRouter):
+                 router: Router):
         self.transport = transport  # type: Union[ReadTransport, WriteTransport]
         self.parent_ctx = parent_ctx
         self.router = router

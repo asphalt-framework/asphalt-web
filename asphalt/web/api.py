@@ -274,7 +274,7 @@ class AbstractEndpoint(metaclass=ABCMeta):
         """
 
 
-class AbstractRouter(metaclass=ABCMeta):
+class Router(metaclass=ABCMeta):
     """A router is an object that knows how to translate a URI to an endpoint."""
 
     __slots__ = ()

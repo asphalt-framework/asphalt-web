@@ -2,7 +2,7 @@ from pathlib import Path, PurePath
 from typing import Union, Optional, cast
 
 from asphalt.core.context import Context
-from asphalt.web.api import AbstractEndpoint, AbstractRouter
+from asphalt.web.api import AbstractEndpoint, Router
 from typeguard import check_argument_types
 
 from asphalt.web.request import BodyHTTPRequest
@@ -19,7 +19,7 @@ class StaticFileEndpoint(AbstractEndpoint):
             raise HTTPMethodNotAllowed(request.method, ['GET'])
 
 
-class StaticFileRouter(AbstractRouter):
+class StaticFileRouter(Router):
     __slots__ = 'basedir'
 
     def __init__(self, basedir: Union[str, Path]):

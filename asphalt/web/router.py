@@ -5,23 +5,23 @@ from typing import List, Dict, Iterable, Optional, Callable, Union, Tuple, Patte
 
 from typeguard import check_argument_types
 
-from asphalt.web.api import AbstractEndpoint, AbstractRouter, HTTP_METHODS
+from asphalt.web.api import AbstractEndpoint, Router, HTTP_METHODS
 from asphalt.web.endpoint import HTTPEndpoint
 
 Route = namedtuple('Route', ['regex', 'endpoint', 'methods'])
 
 
-class Router(AbstractRouter):
+class URLDispatchRouter(Router):
     """Base implementation of AbstractRouter."""
 
     __slots__ = ('routers', 'routes', 'named_routes')
 
     def __init__(self):
-        self.routers = []  # type: List[AbstractRouter]
+        self.routers = []  # type: List[Router]
         self.routes = []  # type: List[Route]
         self.named_routes = {}  # type: Dict[str, AbstractEndpoint]
 
-    def add_router(self, router: AbstractRouter, prefix: str = None):
+    def add_router(self, router: Router, prefix: str = None):
         """
         Add a sub-router to the hierarchy.
 

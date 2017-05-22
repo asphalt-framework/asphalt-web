@@ -11,7 +11,7 @@ from h2.connection import H2Connection
 from multidict import CIMultiDict
 from typeguard import check_argument_types
 
-from asphalt.web.api import AbstractRouter
+from asphalt.web.api import Router
 from asphalt.web.request import BodyHTTPRequest
 from asphalt.web.servers.base import BaseWebServer, BaseHTTPClientConnection
 
@@ -99,7 +99,7 @@ class HTTPServer(BaseWebServer):
 
 
 class HTTPProtocol(Protocol):
-    def __init__(self, parent_ctx: Context, router: AbstractRouter):
+    def __init__(self, parent_ctx: Context, router: Router):
         self.parent_ctx = parent_ctx
         self.router = router
         self.connection = None  # type: BaseHTTPClientConnection
@@ -128,7 +128,7 @@ class HTTPProtocol(Protocol):
 
 
 class HTTP1ConnectionWrapper(BaseHTTPClientConnection):
-    def __init__(self, parent_ctx: Context, transport, router: AbstractRouter):
+    def __init__(self, parent_ctx: Context, transport, router: Router):
         super().__init__(transport, parent_ctx, router)
         self.connection = h11.Connection(h11.SERVER)
         self.request = None  # type: BodyHTTPRequest
@@ -183,7 +183,7 @@ class HTTP1ConnectionWrapper(BaseHTTPClientConnection):
 
 
 class HTTP2ConnectionWrapper(BaseHTTPClientConnection):
-    def __init__(self, parent_ctx: Context, transport, router: AbstractRouter):
+    def __init__(self, parent_ctx: Context, transport, router: Router):
         super().__init__(transport, parent_ctx, router)
         self.requests = {}  # type: Dict[int, BodyHTTPRequest]
         self.tasks = {}  # type: Dict[int, Task]

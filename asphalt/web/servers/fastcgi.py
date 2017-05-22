@@ -9,9 +9,9 @@ from asphalt.core import Context
 from fcgiproto import FastCGIConnection, RequestAbortEvent, RequestBeginEvent, RequestDataEvent
 from multidict import CIMultiDict
 
-from asphalt.web.api import AbstractRouter
+from asphalt.web.api import Router
 from asphalt.web.response import HTTPResponse
-from asphalt.web.router import Router
+from asphalt.web.router import URLDispatchRouter
 from asphalt.web.servers.base import BaseWebServer
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ class FastCGIServer(BaseWebServer):
 
 
 class FastCGIProtocol(Protocol):
-    def __init__(self, parent_ctx: Context, router: AbstractRouter):
+    def __init__(self, parent_ctx: Context, router: Router):
         self.parent_ctx = parent_ctx
         self.router = router
         self.transport = None  # type: Union[ReadTransport, WriteTransport]
