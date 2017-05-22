@@ -1,1 +1,1 @@
-from .router import XMLRPCRouter, XMLRPCError
+from .endpoint import XMLRPCRouter, XMLRPCError

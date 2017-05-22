@@ -8,7 +8,7 @@ from typeguard import check_argument_types
 from asphalt.core.context import Context
 from asphalt.serialization.api import Serializer
 from asphalt.templating.api import TemplateRenderer
-from asphalt.web.request import BodyHTTPRequest
+from asphalt.web.request import HTTPRequest
 from asphalt.web.response import HTTPResponse
 from asphalt.web.utils import encode_header_value
 
@@ -20,7 +20,7 @@ class HTTPRequestContext(Context):
     :ivar WebRequest request: the HTTP request object
     """
 
-    def __init__(self, parent: Context, request: BodyHTTPRequest):
+    def __init__(self, parent: Context, request: HTTPRequest):
         super().__init__(parent)
         self.request = request
 
@@ -32,7 +32,7 @@ class HTTPRequestResponseContext(HTTPRequestContext):
     :ivar WebResponse response: the HTTP response object
     """
 
-    def __init__(self, parent: Context, request: BodyHTTPRequest):
+    def __init__(self, parent: Context, request: HTTPRequest):
         super().__init__(parent, request)
         self.response = HTTPResponse
 

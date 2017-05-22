@@ -5,7 +5,7 @@ from wsproto.connection import WSConnection, ConnectionType
 from wsproto.events import ConnectionRequested, ConnectionClosed, DataReceived
 
 from asphalt.web.api import AbstractEndpoint
-from asphalt.web.request import BodyHTTPRequest
+from asphalt.web.request import HTTPRequest
 from asphalt.web.servers.base import BaseHTTPClientConnection
 
 
@@ -37,7 +37,7 @@ class WebSocketEndpoint(AbstractEndpoint):
         if bytes_to_send:
             self._client.write(bytes_to_send)
 
-    def begin_request(self, request: BodyHTTPRequest):
+    def begin_request(self, request: HTTPRequest):
         trailing_data = self._client.upgrade()
         self._ws.receive_bytes(trailing_data)
         self._process_ws_events()

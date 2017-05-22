@@ -12,7 +12,7 @@ from multidict import CIMultiDict
 from typeguard import check_argument_types
 
 from asphalt.web.api import Router
-from asphalt.web.request import BodyHTTPRequest
+from asphalt.web.request import HTTPRequest
 from asphalt.web.servers.base import BaseWebServer, BaseHTTPClientConnection
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,7 @@ class HTTP1ConnectionWrapper(BaseHTTPClientConnection):
     def __init__(self, parent_ctx: Context, transport, router: Router):
         super().__init__(transport, parent_ctx, router)
         self.connection = h11.Connection(h11.SERVER)
-        self.request = None  # type: BodyHTTPRequest
+        self.request = None  # type: HTTPRequest
         self.task = None  # type: Task
 
     def data_received(self, data: bytes) -> None:
@@ -159,7 +159,7 @@ class HTTP1ConnectionWrapper(BaseHTTPClientConnection):
     def begin_request(self, event):
         headers = CIMultiDict((decode_ascii(key)[0], decode_latin1(value))
                               for key, value in event.headers)
-        self.request = BodyHTTPRequest(
+        self.request = HTTPRequest(
             event.http_version.decode('ascii'), event.method.decode('ascii'),
             event.target.decode('ascii'), headers)
         coro = self.root.begin_request(self.parent_ctx, self.request)
@@ -185,7 +185,7 @@ class HTTP1ConnectionWrapper(BaseHTTPClientConnection):
 class HTTP2ConnectionWrapper(BaseHTTPClientConnection):
     def __init__(self, parent_ctx: Context, transport, router: Router):
         super().__init__(transport, parent_ctx, router)
-        self.requests = {}  # type: Dict[int, BodyHTTPRequest]
+        self.requests = {}  # type: Dict[int, HTTPRequest]
         self.tasks = {}  # type: Dict[int, Task]
         connection = H2Connection(client_side=False)
         connection.initiate_connection()
@@ -218,7 +218,7 @@ class HTTP2ConnectionWrapper(BaseHTTPClientConnection):
     def begin_request(self, stream_id: int, headers: Iterable[Tuple[bytes, bytes]]) -> None:
         headers = CIMultiDict((decode_ascii(key)[0], decode_ascii(value)[0])
                               for key, value in headers)
-        request = BodyHTTPRequest(
+        request = HTTPRequest(
             headers[':scheme'].split('/')[1], headers[':method'], headers[':path'],
             headers)
         coro = self.root.begin_request(self.parent_ctx, request)
