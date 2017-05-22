@@ -2,14 +2,6 @@ from pathlib import Path
 
 from setuptools import setup
 
-extras_requires = {
-    'fastcgi': ['fcgiproto ~= 1.0'],
-    'mongodb': ['asphalt-mongodb ~= 1.0'],
-    'sqlalchemy': ['asphalt-sqlalchemy ~= 2.0'],
-    'xmlrpc': ['defusedxml >= 0.4.1'],
-}
-extras_requires['all'] = sum(extras_requires.values(), [])
-
 setup(
     name='asphalt-web',
     use_scm_version={
@@ -53,7 +45,18 @@ setup(
         'multidict ~= 2.1',
         'wsproto == 0.9'
     ],
-    extras_requires=extras_requires,
+    extras_requires={
+        'fastcgi': ['fcgiproto ~= 1.0'],
+        'mongodb': ['asphalt-mongodb ~= 1.0'],
+        'sqlalchemy': ['asphalt-sqlalchemy ~= 2.0'],
+        'xmlrpc': ['defusedxml >= 0.4.1'],
+        'testing': [
+            'pytest',
+            'pytest-cov',
+            'pytest-catchlog',
+            'pytest-asyncio >= 0.5.0',
+        ]
+    },
     entry_points={
         'asphalt.components': [
             'web = asphalt.web.component:WebServerComponent'

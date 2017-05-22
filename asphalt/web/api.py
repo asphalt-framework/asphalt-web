@@ -291,7 +291,7 @@ class Router(metaclass=ABCMeta):
         """
 
 
-class AbstractSessionStore(metaclass=ABCMeta):
+class SessionStore(metaclass=ABCMeta):
     """Interface for storing sessions."""
 
     __slots__ = ()
