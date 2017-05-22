@@ -99,7 +99,7 @@ class FastCGIProtocol(Protocol):
         secure = 'HTTPS' in params
         peername = params['REMOTE_ADDR']
         peercert = params.get('CLIENT_CERTIFICATE')
-        # request = BodyHTTPRequest(http_version, method, path, query_string, headers, secure,
+        # request = HTTPRequest(http_version, method, path, query_string, headers, secure,
         #                           peername, peercert=peercert)
         self.endpoint = self.router.resolve(path, method)
         retval = self.endpoint.begin_request(request, self)
