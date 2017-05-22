@@ -120,7 +120,7 @@ class URLDispatchRouter(Router):
     def resolve(self, path: str, method: str) -> Optional[AbstractEndpoint]:
         pass
 
-    # def resolve(self, request: BodyHTTPRequest, path: PurePath) -> Optional[WebEndpoint]:
+    # def resolve(self, request: HTTPRequest, path: PurePath) -> Optional[WebEndpoint]:
     #     assert check_argument_types()
     #     for endpoint in self.endpoints:
     #         match = endpoint.match(parts)

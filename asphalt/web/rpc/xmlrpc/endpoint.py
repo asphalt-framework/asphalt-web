@@ -11,7 +11,7 @@ from typeguard import check_argument_types
 
 from asphalt.web.context import HTTPRequestContext
 from asphalt.web.exceptions import HTTPError
-from asphalt.web.request import BodyHTTPRequest
+from asphalt.web.request import HTTPRequest
 from asphalt.web.rpc.base import BaseRPCRouter
 from asphalt.web.rpc.xmlrpc.serialization import serialize, deserialize
 
@@ -62,7 +62,7 @@ class XMLRPCRouter(BaseRPCRouter):
         return ('<?xml version="1.0"?>\n<methodResponse><fault>' + fault +
                 '</fault></methodResponse>')
 
-    async def begin_request(self, parent_ctx: Context, request: BodyHTTPRequest):
+    async def begin_request(self, parent_ctx: Context, request: HTTPRequest):
         # Check that the HTTP method was "POST"
         if request.method != 'POST':
             raise HTTPError(405, 'POST required for XML-RPC')
