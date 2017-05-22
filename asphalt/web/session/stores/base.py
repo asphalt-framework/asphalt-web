@@ -5,10 +5,10 @@ from asphalt.core import Context
 from asphalt.serialization.api import Serializer
 from typeguard import check_argument_types
 
-from asphalt.web.api import AbstractSessionStore
+from asphalt.web.api import SessionStore
 
 
-class BaseSessionStore(AbstractSessionStore):
+class BaseSessionStore(SessionStore):
     """
     Stores sessions in memory. Recommended for development and testing.
 
