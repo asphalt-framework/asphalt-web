@@ -8,7 +8,7 @@ extras_requires = {
     'sqlalchemy': ['asphalt-sqlalchemy ~= 2.0'],
     'xmlrpc': ['defusedxml >= 0.4.1'],
 }
-extras_requires['all'] = sum(extras_requires.values())
+extras_requires['all'] = sum(extras_requires.values(), [])
 
 setup(
     name='asphalt-web',
@@ -49,7 +49,7 @@ setup(
         'asphalt-templating ~= 2.0',
         'asphalt-serialization ~= 4.0',
         'h11 == 0.7.0',
-        'h2 ~= 3.0'
+        'h2 ~= 3.0',
         'multidict ~= 2.1',
         'wsproto == 0.9'
     ],
