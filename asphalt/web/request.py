@@ -145,6 +145,8 @@ class HTTPAccept:
 
     __slots__ = 'content_types'
 
+    language_re = re.compile(r'(\*|(?:[a-z]+))(?:-([a-z]+))?(?:;q=(\d(?:\.\d{1,3})?))?$', re.I)
+
     def __init__(self, value: Optional[str]):
         assert check_argument_types()
         self.content_types = []  # type: List[Tuple[str, Optional[str], Optional[Decimal]]]
@@ -185,7 +187,10 @@ class HTTPAccept:
     def __repr__(self):
         content_types = []
         for type_, subtype, quality in self.content_types:
-            text = '%s/%s' % (type_, subtype)
+            if subtype:
+                text = '%s-%s' % (type_, subtype)
+            else:  # skip the hyphen used with subtype
+                text = '%s' % (type_)
             if quality < 1:
                 text += ';q=%s' % quality
 
