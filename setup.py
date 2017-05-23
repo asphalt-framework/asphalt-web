@@ -45,7 +45,7 @@ setup(
         'multidict ~= 2.1',
         'wsproto == 0.9'
     ],
-    extras_requires={
+    extras_require={
         'fastcgi': ['fcgiproto ~= 1.0'],
         'mongodb': ['asphalt-mongodb ~= 1.0'],
         'sqlalchemy': ['asphalt-sqlalchemy ~= 2.0'],
