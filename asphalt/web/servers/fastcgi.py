@@ -2,7 +2,7 @@ from asyncio import Protocol, ReadTransport, WriteTransport, Task, get_event_loo
 from functools import partial
 from inspect import isawaitable
 from pathlib import PurePath
-from typing import Dict, Union
+from typing import Union  # noqa
 import logging
 
 from asphalt.core import Context

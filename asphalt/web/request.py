@@ -5,7 +5,7 @@ from email.utils import parsedate_to_datetime
 from http.cookies import SimpleCookie
 from inspect import getmembers
 from pathlib import Path
-from typing import Optional, Callable, Any, Union, Iterable, List, Tuple, Sequence, Dict
+from typing import Optional, Callable, Any, Union, Iterable, List, Tuple, Sequence, Dict  # noqa
 from urllib.parse import parse_qs, parse_qsl
 
 from async_generator import async_generator, yield_, aclosing
