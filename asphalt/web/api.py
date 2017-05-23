@@ -330,3 +330,27 @@ class SessionStore(metaclass=ABCMeta):
 
         :return: an awaitable that completes when the operation is complete
         """
+
+
+class WebServer(metaclass=ABCMeta):
+    """Interface for web servers."""
+
+    @abstractmethod
+    async def start(self, parent_ctx: Context) -> None:
+        """
+        Start the server.
+
+        This method should claim all necessary resources and then start listening to incoming
+        requests.
+
+        :param parent_ctx: the parent context for any future request contexts
+        """
+
+    @abstractmethod
+    async def shutdown(self) -> None:
+        """
+        Shut down the server.
+
+        This method should first stop listening to new requests and then finish up all pending
+        requests before returning.
+        """

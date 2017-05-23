@@ -3,11 +3,13 @@ from asyncio import StreamReader
 from decimal import Decimal
 from email.utils import parsedate_to_datetime
 from http.cookies import SimpleCookie
+from inspect import getmembers
 from pathlib import Path
 from typing import Optional, Callable, Any, Union, Iterable, List, Tuple, Sequence, Dict
 from urllib.parse import parse_qs, parse_qsl
 
-from asyncio_extras import open_async, yield_async, async_generator
+from async_generator import async_generator, yield_, aclosing
+from asyncio_extras import open_async
 from multidict import CIMultiDict, MultiDict, MultiDictProxy
 from typeguard import check_argument_types
 
@@ -15,12 +17,22 @@ from asphalt.web.exceptions import HTTPRangeError, HTTPBadRequest
 from asphalt.web.utils import parse_headers, parse_header_value, memoize
 
 
-def converted_header(key: str, converter: Callable[[Any], Any]):
-    def convert_header(self: 'HTTPRequest'):
-        value = self.headers.get(key)
-        return converter(value) if value is not None else None
+class ConvertedHeader:
+    def __init__(self, converter: Callable[[Any], Any]):
+        self.header_name = None
+        self.converter = converter
 
-    return convert_header
+    def __set_name__(self, owner, name: str) -> None:
+        self.header_name = name.replace('_', '-')
+
+    def __get__(self, instance: 'HTTPRequest', owner):
+        if self.header_name is None:
+            header_name = next(
+                attr for attr, value in getmembers(owner, lambda value: value is self))
+            self.__set_name__(owner, header_name)
+
+        value = instance._headers.get(self.header_name)
+        return self.converter(value) if value is not None else None
 
 
 class FormField:
@@ -53,16 +65,27 @@ class FormField:
         self.filename = params.get('filename')
 
     async def save_file(self, directory: Union[Path, str], filename: str = None) -> None:
+        """
+        Save the contents of the form field to a file.
+
+        :param directory: path to the directory to save the file in
+        :param filename: name of the file
+
+        """
         filename = filename or self.filename
         if not filename:
             raise RuntimeError('file name not present in field and no filename argument given')
 
         path = Path(directory) / filename
         async with open_async(path, 'wb') as f:
-            data = self._body.read(65536)
-            boundary_start = data.find(self._boundary)
-            if boundary_start >= 0:
-                await f.send_message(data[:boundary_start])
+            while True:
+                data = await self._body.read(65536)
+                if not data:
+                    break
+
+                boundary_start = data.find(self._boundary)
+                if boundary_start >= 0:
+                    await f.send_message(data[:boundary_start])
 
 
 # class Cookie:
@@ -281,32 +304,39 @@ class HTTPRequest:
     """
 
     def __init__(self, http_version: str, method: str, path: str, query_string: str,
-                 headers: CIMultiDict, secure: bool, peername: str, peercert: Optional[str]):
+                 headers: CIMultiDict, body: Optional[StreamReader], secure: bool, peername: str,
+                 peercert: Optional[str]):
         assert check_argument_types()
         self.http_version = http_version
         self.method = method.upper()
         self.path = path
         self.query_string = query_string
-        self.headers = headers
+        self._headers = headers
+        self._body = body
         self.secure = secure
         self.peername = peername
         self.peercert = peercert
-        self.body = StreamReader()
 
-    accept = converted_header('accept', HTTPAccept)
-    # accept_charset = converted_header('accept-charset', HTTPAcceptCharset.parse)
-    # accept_encoding = converted_header('accept-encoding', HTTPAcceptEncoding.parse)
-    accept_language = converted_header('accept-language', HTTPAcceptLanguage)
-    range = converted_header('range', HTTPRange)
-    content_length = converted_header('content-length', int)
-    if_modified_since = converted_header('if-modified-since', parsedate_to_datetime)
-    if_range = converted_header('if-range', HTTPRange)
-    if_unmodified_since = converted_header('if-unmodified-since', parsedate_to_datetime)
-    max_forwards = converted_header('max-forwards', int)
+    accept = ConvertedHeader(HTTPAccept)
+    # accept_charset = ConvertedHeader(HTTPAcceptCharset.parse)
+    # accept_encoding = ConvertedHeader(HTTPAcceptEncoding.parse)
+    accept_language = ConvertedHeader(HTTPAcceptLanguage)
+    range = ConvertedHeader(HTTPRange)
+    content_length = ConvertedHeader(int)
+    if_modified_since = ConvertedHeader(parsedate_to_datetime)
+    if_range = ConvertedHeader(HTTPRange)
+    if_unmodified_since = ConvertedHeader(parsedate_to_datetime)
+    max_forwards = ConvertedHeader(int)
 
     @property
     @memoize
-    def query(self) -> Dict[str, str]:
+    def headers(self) -> MultiDictProxy:
+        """Return the raw, unparsed request headers."""
+        return MultiDictProxy(self._headers)
+
+    @property
+    @memoize
+    def query(self) -> MultiDictProxy:
         """Return a dictionary of query parameters."""
         query_dict = MultiDict(parse_qsl(self.query, errors='strict'))
         return MultiDictProxy(query_dict)
@@ -315,21 +345,21 @@ class HTTPRequest:
     @memoize
     def charset(self) -> Optional[str]:
         """Return the character set of the request, or ``None`` if none was defined."""
-        main, params = parse_header_value(self.headers.get('content-type', ''))
+        main, params = parse_header_value(self._headers.get('content-type', ''))
         return params.get('charset').lower() if 'charset' in params else None
 
     @property
     @memoize
     def content_type(self) -> Optional[str]:
         """Return the content type of the request, or ``None`` if none was defined."""
-        main, params = parse_header_value(self.headers.get('content-type', ''))
+        main, params = parse_header_value(self._headers.get('content-type', ''))
         return main.lower() if main else None
 
     @property
     @memoize
-    def cookies(self) -> Dict[str, str]:
+    def cookies(self) -> MultiDictProxy:
         """Return a read-only dictionary containing cookie values sent by the client."""
-        cookie_val = self.headers.get('cookie', '')
+        cookie_val = self._headers.get('cookie', '')
         cookies_dict = {key: value.value for key, value in SimpleCookie(cookie_val).items()}
         return MultiDictProxy(cookies_dict)
 
@@ -343,12 +373,11 @@ class HTTPRequest:
         As such, this is not a 100% reliable method of detecting such requests.
 
         """
-        return self.headers.get('x-requested-with') == 'XMLHttpRequest'
+        return self._headers.get('x-requested-with') == 'XMLHttpRequest'
 
-    @memoize
     async def read(self):
         """
-        Read and decode the body according to its content type.
+        Read and decode the request body according to its content type.
 
         Forms (``application/x-www-form-urlencoded`` and ``multipart/form-data``) are automatically
         parsed. If instead the content type matches a known serializer, it is used to deserialize
@@ -359,14 +388,16 @@ class HTTPRequest:
 
         """
         if self.content_type == 'application/x-www-form-urlencoded':
-            body = await self.body.read()
+            body = await self._body.read()
             return parse_qs(body, strict_parsing=True, encoding=self.charset or 'utf-8',
                             errors='strict')
         elif self.content_type == 'multipart/form-data':
-            async for field in self.read_iter():
-                pass
+            form = {}
+            async with aclosing(self.read_iter()) as stream:
+                async for field in stream:
+                    form[field.name] = field
         else:
-            body = await self.body.read()
+            body = await self._body.read()
             if self.content_type.startswith('text/'):
                 return body.decode(self.charset or 'utf-8')
             else:
@@ -374,7 +405,7 @@ class HTTPRequest:
 
     @async_generator
     async def read_iter(self):
-        content_type, params = parse_header_value(self.headers.get('content-type', ''))
+        content_type, params = parse_header_value(self._headers.get('content-type', ''))
         if content_type != 'multipart/form-data':
             if self.content_type is None:
                 raise RuntimeError('no content-type header present in request')
@@ -388,10 +419,10 @@ class HTTPRequest:
 
         boundary = boundary.encode('ascii') + b'\r\n\r\n'
         while True:
-            header_data = await self.body.readuntil(boundary)
+            header_data = await self._body.readuntil(boundary)
             if not header_data:
                 break
 
             headers = parse_headers(header_data)
-            field = FormField(headers, self.body, boundary)
-            await yield_async(field)
+            field = FormField(headers, self._body, boundary)
+            await yield_(field)

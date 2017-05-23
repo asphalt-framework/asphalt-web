@@ -3,24 +3,23 @@ from abc import ABCMeta, abstractmethod
 from asyncio.transports import ReadTransport, WriteTransport
 from pathlib import Path
 from typing import Union, Sequence
-from weakref import WeakSet
 
 from asphalt.core import Context, resolve_reference
 from multidict import CIMultiDict
 from typeguard import check_argument_types
 
-from asphalt.web.api import Router
+from asphalt.web.api import Router, WebServer
 
 
-class BaseWebServer(metaclass=ABCMeta):
+class BaseWebServer(WebServer):
     """
-    Abstract base class for all web servers.
+    Base implementation for web servers.
 
     :param router: the router that will be used to resolve request paths to endpoints:
 
-        * a :class:`~asphalt.web.api.WebRouter` instance
+        * a :class:`~asphalt.web.api.Router` instance
         * a ``module:varname`` reference to one
-        * name of a :class:`~asphalt.web.api.WebRouter` resource
+        * name of a :class:`~asphalt.web.api.Router` resource
     :param host: host name or IP address of local interface (or a sequence of such) to bind to
         (``None`` = all interfaces)
     :param port: port to bind to
@@ -42,25 +41,15 @@ class BaseWebServer(metaclass=ABCMeta):
         self.external_port = external_port or port
         self.external_prefix = external_prefix
         self.parent_ctx = None  # type: Context
-        self.clients = WeakSet()
+        self.clients = set()
         self.logger = logging.getLogger(self.__class__.__module__)
 
     @abstractmethod
     async def start(self, parent_ctx: Context) -> None:
         self.parent_ctx = parent_ctx
+
         if isinstance(self.router, str):
             self.router = await parent_ctx.request_resource(Router, self.router)
-
-    async def shutdown(self, server, address) -> None:
-        # Stop accepting new connections
-        server.close()
-        await server.wait_closed()
-
-        # Wait until the existing requests have been processed
-        if self.clients:
-            self.logger.info('Waiting for %d requests to finish', len(self.clients))
-            for protocol in self.clients:
-                await protocol.wait_finish()
 
 
 class BaseHTTPClientConnection(metaclass=ABCMeta):
@@ -71,11 +60,11 @@ class BaseHTTPClientConnection(metaclass=ABCMeta):
         self.router = router
 
     @abstractmethod
-    def send_headers(self, status: int, headers: CIMultiDict) -> None:
+    async def send_headers(self, status: int, headers: CIMultiDict) -> None:
         pass
 
     @abstractmethod
-    def write(self, data: bytes) -> None:
+    async def write(self, data: bytes) -> None:
         """
         Send data to the client.
 
@@ -87,7 +76,7 @@ class BaseHTTPClientConnection(metaclass=ABCMeta):
         """
         Upgrade to a different protocol.
 
-        :raises NotimplementedError: if the underlying protocol does not support upgrading.
+        :raises NotimplementedError: if the underlying protocol does not support upgrading
         """
 
     @abstractmethod
