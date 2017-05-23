@@ -80,3 +80,4 @@ Stream a response::
 
         # Send JSON data in the last chunk
         return ctx.serialize({'numbers sent': 5, 'message': 'This is the last chunk'})
+
