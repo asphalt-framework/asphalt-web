@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple  # noqa
 from uuid import UUID
 
 from asyncio_extras.threads import call_in_executor

@@ -1,7 +1,7 @@
 import logging
 import re
 from inspect import isawaitable
-from typing import Callable, Dict, List, Tuple, Union, Optional, Any
+from typing import Callable, Dict, List, Tuple, Union, Optional, Any  # noqa
 
 from asphalt.core import Context
 from asphalt.serialization.api import Serializer

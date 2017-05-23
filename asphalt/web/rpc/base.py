@@ -1,5 +1,5 @@
 import re
-from typing import List, Union, Optional, Dict, Callable, Tuple
+from typing import List, Union, Optional, Dict, Callable, Tuple  # noqa
 
 from typeguard import check_argument_types
 

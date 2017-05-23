@@ -1,5 +1,5 @@
 import logging
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any  # noqa
 
 from asphalt.core import (
     ContainerComponent, Context, merge_config, PluginContainer,

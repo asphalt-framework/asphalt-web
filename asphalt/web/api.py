@@ -16,7 +16,8 @@ HTTP_METHODS = frozenset(['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TR
 #     It should be noted that if the application is behind a reverse proxy such as nginx or Apache,
 #     some of these values may not reflect their expected values.
 #     This affects in particular the ``http_version``, ``peername`` and ``peercert`` attributes.
-#     Special measures must be taken to retain the proper values through a reverse proxy connection.
+#     Special measures must be taken to retain the proper values through a reverse proxy
+#        connection.
 #
 #     :ivar str http_version: HTTP version (e.g. ``1.1`` or ``2``)
 #     :ivar str method: HTTP method (e.g. ``GET``, ``POST``, etc.)
@@ -161,7 +162,8 @@ HTTP_METHODS = frozenset(['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TR
 #
 #     :ivar int status: HTTP status code (default = 200)
 #     :ivar multidict.CIMultiDict headers: response headers
-#     :ivar str charset: character set to use for encoding a unicode response body (default = utf-8)
+#     :ivar str charset: character set to use for encoding a unicode response body (default =
+#         utf-8)
 #     :ivar str content_type: content type to set on the response (default = determine from the
 #         return value)
 #     """
@@ -205,7 +207,8 @@ HTTP_METHODS = frozenset(['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TR
 #         :param path: the path the cookie applies to
 #         :param max_age: maximum age of this cookie (in seconds or as a timedelta)
 #         :param expires: expiration date of the cookie (must be timezone aware)
-#         :param secure: ``True`` if the cookie should only be sent across secure (HTTPS) connections
+#         :param secure: ``True`` if the cookie should only be sent across secure (HTTPS)
+#             connections
 #         :param httponly: ``True`` if the cookie should not be accessible from client-side scripts
 #         """
 #
@@ -236,7 +239,8 @@ HTTP_METHODS = frozenset(['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TR
 #
 #         :param path: absolute filesystem path to the file
 #         :param as_attachment: ``True`` to have the web browser prompt the user for an action
-#             regarding the file instead of attempting to display its contents in the browser window
+#             regarding the file instead of attempting to display its contents in the browser
+#             window
 #
 #         """
 
