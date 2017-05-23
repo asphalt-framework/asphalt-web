@@ -18,7 +18,7 @@ class TestHTTPAccept:
 
     def test_repr(self):
         accept = HTTPAccept('da;q=1, en-gb;q=0.812, en;q=0.7, *;q=0.53')
-        assert repr(accept) == "HTTPAcceptLanguage('da, en-gb;q=0.812, en;q=0.7, *;q=0.53')"
+        assert repr(accept) == "HTTPAccept('da, en-gb;q=0.812, en;q=0.7, *;q=0.53')"
 
 
 class TestHTTPAcceptLanguage:
