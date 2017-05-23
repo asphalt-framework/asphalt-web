@@ -8,6 +8,10 @@ class HTTPError(Exception):
         self.body = body
 
 
+class HTTPMethodNotAllowed(Exception):
+    """Raised when method call is not allowed"""
+
+
 class RoutingError(LookupError):
     """Raised when a router cannot resolve a path to an endpoint."""
 

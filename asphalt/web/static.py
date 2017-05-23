@@ -6,6 +6,7 @@ from asphalt.web.api import AbstractEndpoint, Router
 from typeguard import check_argument_types
 
 from asphalt.web.request import HTTPRequest
+from asphalt.web.exception import HTTPMethodNotAllowed
 
 
 class StaticFileEndpoint(AbstractEndpoint):
