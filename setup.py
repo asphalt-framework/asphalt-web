@@ -55,6 +55,7 @@ setup(
             'pytest-cov',
             'pytest-catchlog',
             'pytest-asyncio >= 0.5.0',
+            'lxml',
         ]
     },
     entry_points={
