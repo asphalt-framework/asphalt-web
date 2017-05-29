@@ -45,7 +45,6 @@ setup(
         'wsproto == 0.9'
     ],
     extras_require={
-        'fastcgi': ['fcgiproto ~= 1.0'],
         'mongodb': ['asphalt-mongodb ~= 1.0'],
         'sqlalchemy': ['asphalt-sqlalchemy ~= 2.0'],
         'xmlrpc': ['defusedxml >= 0.4.1'],
@@ -62,7 +61,6 @@ setup(
             'web = asphalt.web.component:WebServerComponent'
         ],
         'asphalt.web.servers': [
-            'fastcgi = asphalt.web.servers.fastcgi:FastCGIProtocol [fastcgi]',
             'http = asphalt.web.servers.http:HTTPProtocol [http]'
         ],
         'asphalt.web.sessionstores': [
