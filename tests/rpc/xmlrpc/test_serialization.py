@@ -1,9 +1,8 @@
 from collections import OrderedDict
-from datetime import datetime, date, timezone, timedelta
-from decimal import Decimal
+from datetime import datetime, date
 
-from lxml.etree import XML
 import pytest
+from lxml.etree import XML
 
 from asphalt.web.rpc.xmlrpc.serialization import serialize, deserialize
 
