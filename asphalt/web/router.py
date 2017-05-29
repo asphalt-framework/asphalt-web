@@ -1,7 +1,7 @@
 import re
 from collections import namedtuple
 from functools import lru_cache
-from typing import List, Dict, Iterable, Optional, Callable, Union, Tuple, Pattern  # noqa
+from typing import List, Dict, Iterable, Optional, Callable, Union, Pattern  # noqa
 
 from typeguard import check_argument_types
 

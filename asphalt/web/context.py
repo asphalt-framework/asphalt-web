@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from email.utils import quote
 from numbers import Number
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
@@ -9,7 +10,7 @@ from asphalt.core.context import Context
 from asphalt.serialization.api import Serializer
 from asphalt.templating.api import TemplateRenderer
 from asphalt.web.request import HTTPRequest
-from asphalt.web.response import HTTPResponse
+from asphalt.web.response import HTTPResponse, UNIX_EPOCH
 from asphalt.web.utils import encode_header_value
 
 
