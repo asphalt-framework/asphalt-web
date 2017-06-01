@@ -37,12 +37,13 @@ setup(
         'setuptools_scm >= 1.7.0'
     ],
     install_requires=[
-        'asphalt ~= 3.0',
+        'asphalt >= 3.0, < 5.0',
         'asphalt-templating ~= 2.0',
         'asphalt-serialization ~= 4.0',
         'h11 == 0.7.0',
         'multidict ~= 2.1',
-        'wsproto == 0.9'
+        'wsproto == 0.9',
+        'typeguard ~= 2.0'
     ],
     extras_require={
         'mongodb': ['asphalt-mongodb ~= 1.0'],
