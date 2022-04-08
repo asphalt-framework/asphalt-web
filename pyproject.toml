@@ -26,11 +26,13 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
+    "aiohttp >= 3.8; (extra == 'test' or extra == 'aiohttp') and python_version < '3.11'",
     "asgiref ~= 3.5; extra == 'test' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
     "asphalt ~= 4.7",
+    "fastapi >= 0.75; extra == 'test' or extra == 'fastapi'",
+    "starlette >= 0.17; extra == 'test' or extra == 'starlette'",
     "typeguard ~= 2.0",
     "uvicorn >= 0.17.6; extra == 'test' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
-    "aiohttp >= 3.8; (extra == 'test' or extra == 'aiohttp') and python_version < '3.11'"
 ]
 dynamic = ["version"]
 
@@ -54,12 +56,8 @@ aiohttp = []
 django = [
     "Django >= 3.2"
 ]
-fastapi = [
-    "fastapi >= 0.75"
-]
-starlette = [
-    "starlette >= 0.17"
-]
+fastapi = []
+starlette = []
 
 [project.entry-points."asphalt.components"]
 aiohttp = "asphalt.web.aiohttp:AIOHTTPComponent"
@@ -106,8 +104,6 @@ isolated_build = true
 
 [testenv]
 extras = test
-    fastapi
-    django
 commands = python -m pytest {posargs}
 
 [testenv:docs]
