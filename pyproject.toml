@@ -29,6 +29,7 @@ dependencies = [
     "aiohttp >= 3.8; (extra == 'test' or extra == 'aiohttp') and python_version < '3.11'",
     "asgiref ~= 3.5; extra == 'test' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
     "asphalt ~= 4.7",
+    "Django >= 3.2; (extra == 'test' and platform_python_implementation == 'CPython') or extra == 'django'",
     "fastapi >= 0.75; extra == 'test' or extra == 'fastapi'",
     "starlette >= 0.17; extra == 'test' or extra == 'starlette'",
     "typeguard ~= 2.0",
@@ -53,9 +54,7 @@ doc = [
     "sphinxcontrib-asyncio >= 0.2.0",
 ]
 aiohttp = []
-django = [
-    "Django >= 3.2"
-]
+django = []
 fastapi = []
 starlette = []
 
@@ -76,7 +75,7 @@ skip_gitignore = true
 profile = "black"
 
 [tool.flake8]
-max-line-length = 88
+max-line-length = 99
 
 [tool.pytest.ini_options]
 addopts = "-rsx --tb=short"
