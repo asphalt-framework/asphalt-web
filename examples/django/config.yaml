@@ -1,0 +1,5 @@
+services:
+  web:
+    component:
+      type: !!python/name:django_example.component.WebComponent
+      app: !!python/name:django_example.asgi.application
