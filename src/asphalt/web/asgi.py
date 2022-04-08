@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from asyncio import create_task, sleep
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Dict, Generic, Optional, TypeVar
 
@@ -20,7 +19,6 @@ from asphalt.core import (
     current_context,
     resolve_reference,
 )
-from typeguard import check_argument_types
 from uvicorn import Config
 
 T_Application = TypeVar("T_Application", bound=ASGI3Application)
@@ -52,10 +50,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         port: int = 8000,
     ) -> None:
         super().__init__(components)
-        if isinstance(app, str):
-            app = resolve_reference(app)
-
-        self.app: T_Application = app
+        self.app: T_Application = resolve_reference(app)
         self.host = host
         self.port = port
 

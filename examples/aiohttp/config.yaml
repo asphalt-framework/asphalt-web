@@ -1,5 +1,5 @@
 services:
   web:
     component:
-      type: !!python/name:example.WebComponent
-      app: !!python/name:example.app
+      type: example:WebComponent
+      app: example:app

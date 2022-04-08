@@ -1,10 +1,10 @@
 import pytest
+from asphalt.core import Context
 from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-from asphalt.core import Context
 from asphalt.web.fastapi import AsphaltDepends, FastAPIComponent
 
 application = FastAPI()
@@ -31,8 +31,9 @@ async def test_fastapi(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await FastAPIComponent(app=application, port=unused_tcp_port).start(ctx)
-        response = await http.get(f"http://127.0.0.1:{unused_tcp_port}",
-                                  params={"param": "Hello World"})
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
         response.raise_for_status()
         assert response.json() == {
             "message": "Hello World",

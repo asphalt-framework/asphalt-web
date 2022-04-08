@@ -1,8 +1,6 @@
 import pytest
-from httpx import AsyncClient
-from uvicorn import Server
-
 from asphalt.core import Context, Dependency, inject
+from httpx import AsyncClient
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
@@ -40,8 +38,9 @@ async def test_starlette(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await StarletteComponent(app=application, port=unused_tcp_port).start(ctx)
-        response = await http.get(f"http://127.0.0.1:{unused_tcp_port}",
-                                  params={"param": "Hello World"})
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
         response.raise_for_status()
         assert response.json() == {
             "message": "Hello World",

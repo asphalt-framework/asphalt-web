@@ -1,11 +1,12 @@
 import json
+from typing import cast
 from urllib.parse import parse_qs
 
 import pytest
-from asgiref.typing import HTTPScope, ASGIReceiveCallable, ASGISendCallable
+from asgiref.typing import ASGIReceiveCallable, ASGISendCallable, HTTPScope
+from asphalt.core import Context, Dependency, inject
 from httpx import AsyncClient
 
-from asphalt.core import Context, Dependency, inject
 from asphalt.web.asgi import ASGIComponent
 
 
@@ -18,7 +19,7 @@ async def application(
     another_resource: str = Dependency("another"),
 ):
     assert scope["type"] == "http"
-    query = parse_qs(scope["query_string"])
+    query = parse_qs(cast(bytes, scope["query_string"]))
     await receive()
     await send(
         {
@@ -50,8 +51,9 @@ async def test_asgi(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
-        response = await http.get(f"http://127.0.0.1:{unused_tcp_port}",
-                                  params={"param": "Hello World"})
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
         response.raise_for_status()
         assert response.json() == {
             "message": "Hello World",

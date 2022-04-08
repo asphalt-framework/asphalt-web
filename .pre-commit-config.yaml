@@ -9,6 +9,7 @@ repos:
     hooks:
       - id: check-toml
       - id: check-yaml
+        exclude: "^examples/"
       - id: debug-statements
       - id: end-of-file-fixer
       - id: mixed-line-ending
@@ -40,7 +41,7 @@ repos:
     rev: v0.942
     hooks:
       - id: mypy
-        exclude: "^examples/"
+        exclude: "^examples/|^tests/django_app/"
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
