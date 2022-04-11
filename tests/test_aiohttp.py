@@ -26,6 +26,7 @@ async def test_aiohttp(unused_tcp_port: int):
 
     from aiohttp.web_app import Application
     from aiohttp.web_routedef import RouteTableDef
+
     from asphalt.web.aiohttp import AIOHTTPComponent
 
     routes = RouteTableDef()
