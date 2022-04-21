@@ -11,6 +11,7 @@ from asgiref.typing import (
     ASGISendCallable,
     HTTPScope,
     Scope,
+    WebSocketScope,
 )
 from asphalt.core import (
     ContainerComponent,
@@ -26,21 +27,39 @@ T_Application = TypeVar("T_Application", bound=ASGI3Application)
 
 @dataclass
 class AsphaltMiddleware:
+    """
+    Generic ASGI middleware for Asphalt integration.
+
+    This middleware wraps both HTTP requests and websocket connections in their own
+    contexts and exposes the ASGI scope object as a resource.
+
+    :param app: the wrapped ASGI 3.0 application
+    """
+
     app: ASGI3Application
 
     async def __call__(
         self, scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
     ) -> None:
-        if scope["type"] == "http":
+        if scope["type"] in ("http", "websocket"):
             assert current_context() is not None
             async with Context() as ctx:
-                ctx.add_resource(scope, types=[HTTPScope])
+                scope_type = HTTPScope if scope["type"] == "http" else WebSocketScope
+                ctx.add_resource(scope, types=[scope_type])
                 await self.app(scope, receive, send)
         else:
             await self.app(scope, receive, send)
 
 
 class ASGIComponent(ContainerComponent, Generic[T_Application]):
+    """
+    A component that serves the given ASGI 3.0 application via Uvicorn.
+
+    :param app: the ASGI application to serve
+    :param host: the IP address to bind to
+    :param port: the port to bind to (default: 8000)
+    """
+
     def __init__(
         self,
         components: Dict[str, Optional[Dict[str, Any]]] = None,
@@ -67,6 +86,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
             log_config=None,
             lifespan="off",
         )
+        ctx.add_resource(self.app)
         server = uvicorn.Server(config)
         server.install_signal_handlers = lambda: None
         assert current_context() is ctx

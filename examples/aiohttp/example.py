@@ -4,7 +4,7 @@ from aiohttp.abc import Request
 from aiohttp.web_app import Application
 from aiohttp.web_response import Response, json_response
 from aiohttp.web_routedef import RouteTableDef
-from asphalt.core import Context, Dependency, inject
+from asphalt.core import Context, _Dependency, inject
 
 from asphalt.web.aiohttp import AIOHTTPComponent
 
@@ -22,8 +22,8 @@ class MyResource:
 @inject
 async def root(
     request: Request,
-    my_resource: MyResource = Dependency(),
-    another_resource: MyResource = Dependency("another"),
+    my_resource: MyResource = _Dependency(),
+    another_resource: MyResource = _Dependency("another"),
 ) -> Response:
     return json_response(
         {

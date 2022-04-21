@@ -1,10 +1,11 @@
 import pytest
-from asphalt.core import Context
 from httpx import AsyncClient
+
+from asphalt.core import Context
 
 
 @pytest.mark.asyncio
-async def test_asgi(unused_tcp_port: int):
+async def test_django_http(unused_tcp_port: int):
     pytest.importorskip("django", reason="Django not available")
 
     from asphalt.web.django import DjangoComponent

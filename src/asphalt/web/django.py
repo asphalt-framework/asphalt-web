@@ -8,7 +8,7 @@ from django.core.handlers.asgi import ASGIHandler, ASGIRequest
 from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import async_only_middleware
 
-from asphalt.web.asgi import ASGIComponent
+from .asgi import ASGIComponent
 
 
 @async_only_middleware
@@ -25,5 +25,9 @@ def AsphaltMiddleware(get_response: Callable[[HttpRequest], Awaitable[HttpRespon
 
 
 class DjangoComponent(ASGIComponent[ASGIHandler]):
+    """
+
+    """
+
     def wrap_in_middleware(self, app: ASGIHandler) -> ASGI3Application:
         return app

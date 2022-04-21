@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 
-from asphalt.core import Context, Dependency, inject
+from asphalt.core import Context, _Dependency, inject
 
 from asphalt.web.asgi import ASGIComponent
 
@@ -18,8 +18,8 @@ async def application(
     scope,
     receive,
     send,
-    my_resource: MyResource = Dependency(),
-    another_resource: MyResource = Dependency("another"),
+    my_resource: MyResource = _Dependency(),
+    another_resource: MyResource = _Dependency("another"),
 ):
     """Trivial example of a raw ASGI application without a framework."""
     if scope["type"] == "http":

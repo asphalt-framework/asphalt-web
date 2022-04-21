@@ -7,10 +7,10 @@ from typing import Any, TypeVar
 from asgiref.typing import ASGI3Application
 from asphalt.core import Context, current_context
 from fastapi import Depends, FastAPI
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRoute, APIWebSocketRoute
 
-from asphalt.web.asgi import ASGIComponent
-from asphalt.web.starlette import AsphaltMiddleware
+from .asgi import ASGIComponent
+from .starlette import AsphaltMiddleware
 
 T_ResourceType = TypeVar("T_ResourceType")
 
@@ -41,7 +41,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
     def wrap_in_middleware(self, app: FastAPI) -> ASGI3Application:
         # Convert Asphalt dependencies into FastAPI dependencies
         for route in app.router.routes:
-            if isinstance(route, APIRoute):
+            if isinstance(route, (APIRoute, APIWebSocketRoute)):
                 sig: Signature | None = None
                 for dependency in route.dependant.dependencies:
                     if isinstance(dependency.call, _AsphaltDependency):
@@ -58,7 +58,3 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
                         dependency.call.cls = annotation
 
         return AsphaltMiddleware(app)
-
-    async def start(self, ctx: Context):
-        ctx.add_resource(self.app, types=[ASGI3Application.__origin__, FastAPI])
-        await super().start(ctx)

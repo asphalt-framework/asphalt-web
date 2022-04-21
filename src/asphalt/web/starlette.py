@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from asgiref.typing import ASGI3Application, HTTPScope
-from asphalt.core import Context
+from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
+from starlette.types import Scope, Receive, Send
+
+from asphalt.core import Context, current_context
 from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
@@ -11,19 +13,22 @@ from asphalt.web.asgi import ASGIComponent
 
 
 class AsphaltMiddleware(BaseHTTPMiddleware):
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        async with Context() as ctx:
+            if scope["type"] == "http":
+                ctx.add_resource(scope, types=[HTTPScope])
+            elif scope["type"] == "websocket":
+                ctx.add_resource(scope, types=[WebSocketScope])
+
+            await super().__call__(scope, receive, send)
+
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        async with Context() as ctx:
-            ctx.add_resource(request.scope, types=[HTTPScope])
-            ctx.add_resource(request)
-            return await call_next(request)
+        current_context().add_resource(request)
+        return await call_next(request)
 
 
 class StarletteComponent(ASGIComponent[Starlette]):
     def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)
-
-    async def start(self, ctx: Context):
-        ctx.add_resource(self.app, types=[ASGI3Application.__origin__, Starlette])
-        await super().start(ctx)

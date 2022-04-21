@@ -5,8 +5,8 @@
   :target: https://coveralls.io/github/asphalt-framework/asphalt-web?branch=master
   :alt: Code Coverage
 
-This Asphalt framework component provides integrations for various web frameworks, enabling them to
-make use of Asphalt components.
+This Asphalt framework component provides integrations for various web frameworks,
+enabling them to make use of Asphalt components.
 
 The following web frameworks are catered for:
 
@@ -16,9 +16,10 @@ The following web frameworks are catered for:
 * FastAPI_
 * Starlette_
 
-WSGI is not supported because Asphalt focuses on asynchronous operation and WSGI is a synchronous
-web application gateway standard.
+WSGI is not supported because Asphalt focuses on asynchronous operation and WSGI is a
+synchronous web application gateway standard.
 
+.. _ASGI: https://asgi.readthedocs.io/
 .. _AIOHTTP: https://docs.aiohttp.org/
 .. _Django: https://www.djangoproject.com/
 .. _FastAPI: https://fastapi.tiangolo.com/

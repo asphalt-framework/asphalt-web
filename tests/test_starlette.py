@@ -1,10 +1,16 @@
+import json
+
 import pytest
-from asphalt.core import Context, Dependency, inject
+import websockets
+from asgiref.typing import WebSocketScope, HTTPScope
+
+from asphalt.core import Context, _Dependency, inject, current_context
 from httpx import AsyncClient
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
-from starlette.routing import Route
+from starlette.routing import Route, WebSocketRoute
+from starlette.websockets import WebSocket
 
 from asphalt.web.starlette import StarletteComponent
 
@@ -12,12 +18,32 @@ from asphalt.web.starlette import StarletteComponent
 @inject
 async def root(
     request: Request,
-    my_resource: str = Dependency(),
-    another_resource: str = Dependency("another"),
+    my_resource: str = _Dependency(),
+    another_resource: str = _Dependency("another"),
 ) -> Response:
+    current_context().require_resource(HTTPScope)
+    current_context().require_resource(Request)
     return JSONResponse(
         {
             "message": request.query_params["param"],
+            "my resource": my_resource,
+            "another resource": another_resource,
+        }
+    )
+
+
+@inject
+async def ws_root(
+    websocket: WebSocket,
+    my_resource: str = _Dependency(),
+    another_resource: str = _Dependency("another"),
+):
+    current_context().require_resource(WebSocketScope)
+    await websocket.accept()
+    message = await websocket.receive_text()
+    await websocket.send_json(
+        {
+            "message": f"Hello {message}",
             "my resource": my_resource,
             "another resource": another_resource,
         }
@@ -28,12 +54,13 @@ application = Starlette(
     debug=True,
     routes=[
         Route("/", root),
+        WebSocketRoute("/ws", ws_root),
     ],
 )
 
 
 @pytest.mark.asyncio
-async def test_starlette(unused_tcp_port: int):
+async def test_starlette_http(unused_tcp_port: int):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
@@ -47,3 +74,19 @@ async def test_starlette(unused_tcp_port: int):
             "my resource": "foo",
             "another resource": "bar",
         }
+
+
+@pytest.mark.asyncio
+async def test_starlette_ws(unused_tcp_port: int):
+    async with Context() as ctx:
+        ctx.add_resource("foo")
+        ctx.add_resource("bar", name="another")
+        await StarletteComponent(app=application, port=unused_tcp_port).start(ctx)
+        async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
+            await ws.send("World")
+            response = json.loads(await ws.recv())
+            assert response == {
+                "message": "Hello World",
+                "my resource": "foo",
+                "another resource": "bar",
+            }

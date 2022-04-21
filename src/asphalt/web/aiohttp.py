@@ -27,6 +27,12 @@ async def asphalt_middleware(
 
 
 class AIOHTTPComponent(ContainerComponent):
+    """
+    A component that serves an aiohttp application.
+
+    :param app: 
+    """
+
     def __init__(
         self,
         components: Dict[str, Optional[Dict[str, Any]]] = None,
