@@ -34,7 +34,13 @@ class StarletteComponent(ASGIComponent[Starlette]):
     """
     A component that serves a Starlette application.
 
-    :param starlette.applications.Starlette app: the Starlette application object
+    :param app: the Starlette application object
+    :param host: the IP address to bind to
+    :param port: the port to bind to
+    :param debug: whether to enable debug mode in an implicitly created application
+        (default: the value of
+        `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
+        ignored if an application object is explicitly passed in)
     """
 
     def __init__(
@@ -44,8 +50,12 @@ class StarletteComponent(ASGIComponent[Starlette]):
         app: Starlette | None = None,
         host: str = "127.0.0.1",
         port: int = 8000,
+        debug: bool | None = None,
     ) -> None:
-        super().__init__(components, app=app or Starlette(), host=host, port=port)
+        debug = debug if isinstance(debug, bool) else __debug__
+        super().__init__(
+            components, app=app or Starlette(debug=debug), host=host, port=port
+        )
 
     def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)

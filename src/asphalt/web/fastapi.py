@@ -48,18 +48,28 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
     """
     A component that serves a FastAPI application.
 
-    :param fastapi.FastAPI app: the FastAPI application object
+    :param app: the FastAPI application object, or a module:varname reference to one
+    :param host: the IP address to bind to
+    :param port: the port to bind to
+    :param debug: whether to enable debug mode in an implicitly created application
+        (default: the value of
+        `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
+        ignored if an application object is explicitly passed in)
     """
 
     def __init__(
         self,
         components: dict[str, dict[str, Any] | None] = None,
         *,
-        app: FastAPI | None = None,
+        app: FastAPI | str | None = None,
         host: str = "127.0.0.1",
         port: int = 8000,
+        debug: bool | None = None,
     ) -> None:
-        super().__init__(components, app=app or FastAPI(), host=host, port=port)
+        debug = debug if isinstance(debug, bool) else __debug__
+        super().__init__(
+            components, app=app or FastAPI(debug=debug), host=host, port=port
+        )
 
     def wrap_in_middleware(self, app: FastAPI) -> ASGI3Application:
         # Convert Asphalt dependencies into FastAPI dependencies

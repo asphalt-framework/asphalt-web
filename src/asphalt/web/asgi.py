@@ -33,7 +33,7 @@ class AsphaltMiddleware:
     This middleware wraps both HTTP requests and websocket connections in their own
     contexts and exposes the ASGI scope object as a resource.
 
-    :param asgiref.typing.ASGI3Application app: the wrapped ASGI 3.0 application
+    :param asgiref.typing.ASGI3Application app: an ASGI 3.0 application
     """
 
     app: ASGI3Application
@@ -54,9 +54,10 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
     """
     A component that serves the given ASGI 3.0 application via Uvicorn.
 
-    :param asgiref.typing.ASGI3Application app: the ASGI application to serve
-    :param str host: the IP address to bind to
-    :param int port: the port to bind to (default: 8000)
+    :param app: the ASGI application to serve, or a module:varname reference to one
+    :type app: asgiref.typing.ASGI3Application | None
+    :param host: the IP address to bind to
+    :param port: the port to bind to
     """
 
     def __init__(

@@ -29,22 +29,28 @@ class AIOHTTPComponent(ContainerComponent):
     """
     A component that serves an aiohttp application.
 
-    :param aiohttp.web_app.Application app: the application object
-    :param str host: the IP address to bind to
-    :param int port: the port to bind to (default: 8000)
+    :param app: the application object, or a module:varname reference to one
+    :param host: the IP address to bind to
+    :param port: the port to bind to
+    :param debug: whether to enable debug mode in an implicitly created application
+        (default: the value of
+        `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
+        ignored if an application object is explicitly passed in)
     """
 
     def __init__(
         self,
         components: dict[str, dict[str, Any] | None] = None,
         *,
-        app: str | Application | None = None,
+        app: Application | str | None = None,
         host: str = "127.0.0.1",
         port: int = 8000,
+        debug: bool | None = None,
     ) -> None:
         super().__init__(components)
 
-        self.app = resolve_reference(app) or Application()
+        debug = debug if isinstance(debug, bool) else __debug__
+        self.app = resolve_reference(app) or Application(debug=debug)
         self.app.middlewares.append(asphalt_middleware)
         self.host = host
         self.port = port
