@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from inspect import Parameter, Signature, signature
-from typing import Any, TypeVar
+from typing import Any
 
 from asgiref.typing import ASGI3Application
 from asphalt.core import require_resource
@@ -11,8 +11,6 @@ from fastapi.routing import APIRoute, APIWebSocketRoute
 
 from .asgi import ASGIComponent
 from .starlette import AsphaltMiddleware
-
-T_ResourceType = TypeVar("T_ResourceType")
 
 
 @dataclass
