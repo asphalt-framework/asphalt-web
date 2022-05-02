@@ -1,5 +1,5 @@
 services:
-  web:
+  static:
     component:
-      type: django_example.component:WebComponent
+      type: django
       app: django_example.asgi:application

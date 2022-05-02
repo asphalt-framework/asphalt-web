@@ -1,5 +1,12 @@
 services:
-  web:
+  static:
     component:
-      type: example:WebComponent
-      app: example:app
+      type: aiohttp
+      app: static:application
+
+  dynamic:
+    component:
+      type: aiohttp
+      components:
+        myroot:
+          type: dynamic:WebRootComponent

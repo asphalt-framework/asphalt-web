@@ -1,5 +1,12 @@
 services:
-  web:
+  static:
     component:
-      type: example:WebComponent
-      app: example:application
+      type: starlette
+      app: static:application
+
+  dynamic:
+    component:
+      type: starlette
+      components:
+        myroot:
+          type: dynamic:WebRootComponent

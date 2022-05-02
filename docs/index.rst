@@ -8,8 +8,8 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
+   usage
    integrations
    contributing
    versionhistory
-
-* :ref:`API reference <modindex>`
+   py-modindex

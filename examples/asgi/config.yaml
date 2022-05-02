@@ -1,5 +1,5 @@
 services:
-  web:
+  static:
     component:
-      type: example:WebComponent
-      app: example:application
+      type: asgi
+      app: static:application

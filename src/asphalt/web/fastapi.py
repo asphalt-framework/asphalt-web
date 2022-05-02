@@ -44,6 +44,16 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
     :param fastapi.FastAPI app: the FastAPI application object
     """
 
+    def __init__(
+        self,
+        components: dict[str, dict[str, Any] | None] = None,
+        *,
+        app: FastAPI | None = None,
+        host: str = "127.0.0.1",
+        port: int = 8000,
+    ) -> None:
+        super().__init__(components, app=app or FastAPI(), host=host, port=port)
+
     def wrap_in_middleware(self, app: FastAPI) -> ASGI3Application:
         # Convert Asphalt dependencies into FastAPI dependencies
         for route in app.router.routes:

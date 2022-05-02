@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
-from typing import Any, Awaitable, Callable, Dict, Optional, Union
+from collections.abc import AsyncIterator, Awaitable, Callable
+from typing import Any
 
 from aiohttp.web_app import Application
 from aiohttp.web_middlewares import middleware
@@ -14,7 +14,6 @@ from asphalt.core import (
     context_teardown,
     resolve_reference,
 )
-from typeguard import check_argument_types
 
 
 @middleware
@@ -31,19 +30,19 @@ class AIOHTTPComponent(ContainerComponent):
     A component that serves an aiohttp application.
 
     :param aiohttp.web_app.Application app: the application object
+    :param dict site: keyword arguments passed to :class:`aiohttp.web_runner.TCPSite`
     """
 
     def __init__(
         self,
-        components: Dict[str, Optional[Dict[str, Any]]] = None,
+        components: dict[str, dict[str, Any] | None] = None,
         *,
-        app: Union[str, Application],
-        site: Optional[Dict[str, Any]] = None,
+        app: str | Application | None = None,
+        site: dict[str, Any] | None = None,
     ) -> None:
-        check_argument_types()
         super().__init__(components)
 
-        self.app = resolve_reference(app)
+        self.app = resolve_reference(app) or Application()
         self.app.middlewares.append(asphalt_middleware)
         self.site_options = site or {}
         self.site_options.setdefault("port", 8000)

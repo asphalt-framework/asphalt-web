@@ -9,6 +9,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
     "sphinxcontrib.asyncio",
+    "sphinx_tabs.tabs",
 ]
 
 templates_path = ["_templates"]

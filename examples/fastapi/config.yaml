@@ -1,5 +1,12 @@
 services:
-  web:
+  static:
     component:
-      type: example:WebComponent
-      app: example:application
+      type: fastapi
+      app: static:application
+
+  dynamic:
+    component:
+      type: fastapi
+      components:
+        myroot:
+          type: dynamic:WebRootComponent

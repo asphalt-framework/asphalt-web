@@ -1,19 +1,5 @@
-from asphalt.core import inject, resource
-from django.http import HttpRequest, HttpResponse, JsonResponse
-
-from .component import MyResource
+from django.http import HttpRequest, HttpResponse
 
 
-@inject
-async def index(
-    request: HttpRequest,
-    my_resource: MyResource = resource(),
-    another_resource: MyResource = resource("another"),
-) -> HttpResponse:
-    return JsonResponse(
-        {
-            "message": "Hello World",
-            "my resource": my_resource.description,
-            "another resource": another_resource.description,
-        }
-    )
+async def index(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(b"Hello, world!")

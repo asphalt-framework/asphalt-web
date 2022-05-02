@@ -3,7 +3,7 @@ from __future__ import annotations
 from asyncio import create_task, sleep
 from dataclasses import dataclass
 from inspect import isfunction
-from typing import Any, Dict, Generic, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 import uvicorn
 from asgiref.typing import (
@@ -61,7 +61,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
 
     def __init__(
         self,
-        components: Dict[str, Optional[Dict[str, Any]]] = None,
+        components: dict[str, dict[str, Any] | None] = None,
         *,
         app: T_Application,
         host: str = "127.0.0.1",

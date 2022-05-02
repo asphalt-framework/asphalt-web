@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
 from asphalt.core import Context, current_context
 from starlette.applications import Starlette
@@ -34,6 +36,16 @@ class StarletteComponent(ASGIComponent[Starlette]):
 
     :param starlette.applications.Starlette app: the Starlette application object
     """
+
+    def __init__(
+        self,
+        components: dict[str, dict[str, Any] | None] = None,
+        *,
+        app: Starlette | None = None,
+        host: str = "127.0.0.1",
+        port: int = 8000,
+    ) -> None:
+        super().__init__(components, app=app or Starlette(), host=host, port=port)
 
     def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)
