@@ -1,7 +1,6 @@
 import pytest
-from httpx import AsyncClient
-
 from asphalt.core import Context
+from httpx import AsyncClient
 
 
 @pytest.mark.asyncio

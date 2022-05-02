@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from asphalt.core import Context, _Dependency, inject
+from asphalt.core import Context, inject, resource
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
@@ -19,8 +19,8 @@ class MyResource:
 @inject
 async def root(
     request: Request,
-    my_resource: MyResource = _Dependency(),
-    another_resource: MyResource = _Dependency("another"),
+    my_resource: MyResource = resource(),
+    another_resource: MyResource = resource("another"),
 ) -> Response:
     return JSONResponse(
         {

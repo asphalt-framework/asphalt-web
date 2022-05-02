@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from starlette.types import Scope, Receive, Send
-
 from asphalt.core import Context, current_context
 from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.types import Receive, Scope, Send
 
 from asphalt.web.asgi import ASGIComponent
 

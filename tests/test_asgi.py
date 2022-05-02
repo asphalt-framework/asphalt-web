@@ -10,7 +10,7 @@ from asgiref.typing import (
     HTTPScope,
     WebSocketScope,
 )
-from asphalt.core import Context, _Dependency, current_context, inject
+from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
 
 from asphalt.web.asgi import ASGIComponent
@@ -21,8 +21,8 @@ async def application(
     scope: HTTPScope,
     receive: ASGIReceiveCallable,
     send: ASGISendCallable,
-    my_resource: str = _Dependency(),
-    another_resource: str = _Dependency("another"),
+    my_resource: str = resource(),
+    another_resource: str = resource("another"),
 ):
     if scope["type"] == "http":
         current_context().require_resource(HTTPScope)

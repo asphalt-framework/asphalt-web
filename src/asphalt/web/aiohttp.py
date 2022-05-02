@@ -30,7 +30,7 @@ class AIOHTTPComponent(ContainerComponent):
     """
     A component that serves an aiohttp application.
 
-    :param app: 
+    :param app:
     """
 
     def __init__(

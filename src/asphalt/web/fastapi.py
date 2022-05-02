@@ -5,7 +5,7 @@ from inspect import Parameter, Signature, signature
 from typing import Any, TypeVar
 
 from asgiref.typing import ASGI3Application
-from asphalt.core import Context, current_context
+from asphalt.core import current_context
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 

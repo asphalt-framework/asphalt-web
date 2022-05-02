@@ -2,9 +2,8 @@ import json
 
 import pytest
 import websockets
-from asgiref.typing import WebSocketScope, HTTPScope
-
-from asphalt.core import Context, _Dependency, inject, current_context
+from asgiref.typing import HTTPScope, WebSocketScope
+from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -18,8 +17,8 @@ from asphalt.web.starlette import StarletteComponent
 @inject
 async def root(
     request: Request,
-    my_resource: str = _Dependency(),
-    another_resource: str = _Dependency("another"),
+    my_resource: str = resource(),
+    another_resource: str = resource("another"),
 ) -> Response:
     current_context().require_resource(HTTPScope)
     current_context().require_resource(Request)
@@ -35,8 +34,8 @@ async def root(
 @inject
 async def ws_root(
     websocket: WebSocket,
-    my_resource: str = _Dependency(),
-    another_resource: str = _Dependency("another"),
+    my_resource: str = resource(),
+    another_resource: str = resource("another"),
 ):
     current_context().require_resource(WebSocketScope)
     await websocket.accept()

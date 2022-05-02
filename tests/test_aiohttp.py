@@ -2,15 +2,15 @@ import json
 
 import pytest
 import websockets
-from asphalt.core import Context, _Dependency, inject
+from asphalt.core import Context, inject, resource
 from httpx import AsyncClient
 
 
 @inject
 async def root(
     request,
-    my_resource: str = _Dependency(),
-    another_resource: str = _Dependency("another"),
+    my_resource: str = resource(),
+    another_resource: str = resource("another"),
 ):
     from aiohttp.web_response import json_response
 
@@ -26,8 +26,8 @@ async def root(
 @inject
 async def ws_root(
     request,
-    my_resource: str = _Dependency(),
-    another_resource: str = _Dependency("another"),
+    my_resource: str = resource(),
+    another_resource: str = resource("another"),
 ):
     from aiohttp.web_ws import WebSocketResponse
 

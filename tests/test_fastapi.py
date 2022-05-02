@@ -3,7 +3,6 @@ import json
 import pytest
 import websockets
 from asgiref.typing import HTTPScope, WebSocketScope
-
 from asphalt.core import Context, current_context
 from fastapi import FastAPI
 from httpx import AsyncClient

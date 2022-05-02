@@ -28,7 +28,7 @@ classifiers = [
 dependencies = [
     "aiohttp >= 3.8; (extra == 'test' or extra == 'doc' or extra == 'aiohttp') and python_version < '3.11'",
     "asgiref ~= 3.5; extra == 'test' or extra == 'doc' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
-    "asphalt ~= 4.7",
+    "asphalt ~= 4.8",
     "Django >= 3.2; (extra == 'test' and platform_python_implementation == 'CPython') or extra == 'django'",
     "fastapi >= 0.75; extra == 'test' or extra == 'doc' or extra == 'fastapi'",
     "starlette >= 0.17; extra == 'test' or extra == 'doc' or extra == 'starlette'",

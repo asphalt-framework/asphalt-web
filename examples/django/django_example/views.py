@@ -1,4 +1,4 @@
-from asphalt.core import _Dependency, inject
+from asphalt.core import inject, resource
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
 from .component import MyResource
@@ -7,8 +7,8 @@ from .component import MyResource
 @inject
 async def index(
     request: HttpRequest,
-    my_resource: MyResource = _Dependency(),
-    another_resource: MyResource = _Dependency("another"),
+    my_resource: MyResource = resource(),
+    another_resource: MyResource = resource("another"),
 ) -> HttpResponse:
     return JsonResponse(
         {
