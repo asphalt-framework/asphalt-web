@@ -62,6 +62,10 @@ async def test_aiohttp_http(unused_tcp_port: int):
         await AIOHTTPComponent(app=application, site={"port": unused_tcp_port}).start(
             ctx
         )
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(Application)
+
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
         )
@@ -92,6 +96,10 @@ async def test_aiohttp_ws(unused_tcp_port: int):
         await AIOHTTPComponent(app=application, site={"port": unused_tcp_port}).start(
             ctx
         )
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(Application)
+
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
             await ws.send("World")
             response = json.loads(await ws.recv())

@@ -12,6 +12,13 @@ Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/a
 
 This is a generic integration for ASGI applications.
 
+Resources available on the global context:
+
+* the application object
+
+  * type: `asgiref.typing.ASGI3Application`_
+  * name: ``default``
+
 Resources available to request handlers:
 
 * the ASGI scope of the request
@@ -27,6 +34,13 @@ Component: ``django`` (:class:`.django.DjangoComponent`)
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/django
 
 This integration is based on the ASGI 3.0 integration.
+
+Resources available on the global context:
+
+* the application object
+
+  * type: `asgiref.typing.ASGI3Application`_ or `django.core.handlers.asgi.ASGIHandler`_
+  * name: ``default``
 
 Resources available to request handlers:
 
@@ -49,6 +63,13 @@ Component: ``starlette`` (:class:`.starlette.StarletteComponent`)
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/starlette
 
 This integration is based on the ASGI 3.0 integration.
+
+Resources available on the global context:
+
+* the application object
+
+  * type: `asgiref.typing.ASGI3Application`_ or `starlette.applications.Starlette`_
+  * name: ``default``
 
 Resources available to HTTP request handlers:
 
@@ -84,6 +105,13 @@ inject, you need to use :func:`~asphalt.web.fastapi.AsphaltDepends` instead. The
 machinery in :class:`~asphalt.web.fastapi.FastAPIComponent` will handle the appropriate
 translation.
 
+Resources available on the global context:
+
+* the application object
+
+  * type: `asgiref.typing.ASGI3Application`_ or `fastapi.FastAPI`_
+  * name: ``default``
+
 Resources available to HTTP request handlers:
 
 * the ASGI scope of the request
@@ -111,6 +139,13 @@ Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/a
 
 Unlike the other frameworks supported here, AIOHTTP is not based on the ASGI standard.
 
+Resources available on the global context:
+
+* the application object
+
+  * type: `aiohttp.web_app.Application`_
+  * name: ``default``
+
 Resources available to request handlers:
 
 * the request object
@@ -118,8 +153,13 @@ Resources available to request handlers:
   * type: `aiohttp.web_request.Request`_
   * name: ``default``
 
+.. _asgiref.typing.ASGI3Application: https://asgi.readthedocs.io/en/latest/specs/main.html#applications
 .. _asgiref.typing.HTTPScope: https://asgi.readthedocs.io/en/latest/specs/www.html#http-connection-scope
 .. _asgiref.typing.WebSocketScope: https://asgi.readthedocs.io/en/latest/specs/www.html#websocket-connection-scope
-.. _starlette.requests.Request: https://www.starlette.io/requests/
+.. _django.core.handlers.asgi.ASGIHandler: https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/#the-application-object
 .. _django.http.HttpRequest: https://docs.djangoproject.com/en/3.2/ref/request-response/#httprequest-objects
+.. _starlette.requests.Request: https://www.starlette.io/requests/
+.. _starlette.applications.Starlette: https://www.starlette.io/applications/
+.. _fastapi.FastAPI: https://fastapi.tiangolo.com/tutorial/first-steps/
+.. _aiohttp.web_app.Application: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.Application
 .. _aiohttp.web_request.Request: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.Request

@@ -2,7 +2,7 @@ import json
 
 import pytest
 import websockets
-from asgiref.typing import HTTPScope, WebSocketScope
+from asgiref.typing import HTTPScope, WebSocketScope, ASGI3Application
 from asphalt.core import Context, current_context
 from fastapi import FastAPI
 from httpx import AsyncClient
@@ -56,6 +56,12 @@ async def test_fastapi_http(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await FastAPIComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        asgi_app = ctx.require_resource(ASGI3Application)
+        fastapi_app = ctx.require_resource(FastAPI)
+        assert fastapi_app is asgi_app
+
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
         )
@@ -73,6 +79,12 @@ async def test_fastapi_ws(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await FastAPIComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        asgi_app = ctx.require_resource(ASGI3Application)
+        fastapi_app = ctx.require_resource(FastAPI)
+        assert fastapi_app is asgi_app
+
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
             await ws.send("World")
             response = json.loads(await ws.recv())

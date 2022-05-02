@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from asyncio import create_task, sleep
+from inspect import isclass, isfunction
+
 from dataclasses import dataclass
 from typing import Any, Dict, Generic, Optional, TypeVar
 
@@ -86,7 +88,13 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
             log_config=None,
             lifespan="off",
         )
-        ctx.add_resource(self.app)
+
+        types = [ASGI3Application]
+        if not isfunction(self.app):
+            types.append(type(self.app))
+
+        ctx.add_resource(self.app, types=types)
+
         server = uvicorn.Server(config)
         server.install_signal_handlers = lambda: None
         assert current_context() is ctx

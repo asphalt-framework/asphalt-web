@@ -1,4 +1,7 @@
 import pytest
+from asgiref.typing import ASGI3Application
+from django.core.handlers.asgi import ASGIHandler
+
 from asphalt.core import Context
 from httpx import AsyncClient
 
@@ -15,6 +18,12 @@ async def test_django_http(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await DjangoComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        asgi_app = ctx.require_resource(ASGI3Application)
+        asgi_handler = ctx.require_resource(ASGIHandler)
+        assert asgi_handler is asgi_app
+
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
         )

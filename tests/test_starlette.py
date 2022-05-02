@@ -2,7 +2,7 @@ import json
 
 import pytest
 import websockets
-from asgiref.typing import HTTPScope, WebSocketScope
+from asgiref.typing import HTTPScope, WebSocketScope, ASGI3Application
 from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
 from starlette.applications import Starlette
@@ -64,6 +64,12 @@ async def test_starlette_http(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await StarletteComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        asgi_app = ctx.require_resource(ASGI3Application)
+        starlette_app = ctx.require_resource(Starlette)
+        assert starlette_app is asgi_app
+
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
         )
@@ -81,6 +87,12 @@ async def test_starlette_ws(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await StarletteComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        asgi_app = ctx.require_resource(ASGI3Application)
+        starlette_app = ctx.require_resource(Starlette)
+        assert starlette_app is asgi_app
+
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
             await ws.send("World")
             response = json.loads(await ws.recv())

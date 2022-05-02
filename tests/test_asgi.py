@@ -8,7 +8,7 @@ from asgiref.typing import (
     ASGIReceiveCallable,
     ASGISendCallable,
     HTTPScope,
-    WebSocketScope,
+    WebSocketScope, ASGI3Application,
 )
 from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
@@ -79,6 +79,11 @@ async def test_asgi_http(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(ASGI3Application)
+
+        # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
         )
@@ -96,6 +101,11 @@ async def test_asgi_ws(unused_tcp_port: int):
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(ASGI3Application)
+
+        # Ensure that the application works correctly with a websocket connection
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
             await ws.send("World")
             response = json.loads(await ws.recv())
