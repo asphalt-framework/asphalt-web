@@ -46,12 +46,9 @@ async def ws_root(
 class RouteComponent(Component):
     async def start(self, ctx: Context) -> None:
         from aiohttp.web_app import Application
-        from aiohttp.web_routedef import RouteTableDef
 
-        routes = RouteTableDef()
-        routes.get("/")(root)
         app = require_resource(Application)
-        app.router.add_routes(routes)
+        app.router.add_route("GET", "/", root)
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
