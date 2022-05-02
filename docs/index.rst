@@ -9,6 +9,7 @@ Table of contents
    :maxdepth: 2
 
    integrations
+   contributing
    versionhistory
 
 * :ref:`API reference <modindex>`
