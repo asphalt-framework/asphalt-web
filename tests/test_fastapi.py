@@ -3,7 +3,7 @@ import json
 import pytest
 import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Context, current_context
+from asphalt.core import Component, Context, inject, require_resource, resource
 from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.requests import Request
@@ -12,17 +12,14 @@ from starlette.websockets import WebSocket
 
 from asphalt.web.fastapi import AsphaltDepends, FastAPIComponent
 
-application = FastAPI()
 
-
-@application.get("/")
 async def root(
     request: Request,
     my_resource: str = AsphaltDepends(),
     another_resource: str = AsphaltDepends("another"),
 ) -> Response:
-    current_context().require_resource(HTTPScope)
-    current_context().require_resource(Request)
+    require_resource(HTTPScope)
+    require_resource(Request)
     return JSONResponse(
         {
             "message": request.query_params["param"],
@@ -32,13 +29,12 @@ async def root(
     )
 
 
-@application.websocket("/ws")
 async def ws_root(
     websocket: WebSocket,
     my_resource: str = AsphaltDepends(),
     another_resource: str = AsphaltDepends("another"),
 ):
-    current_context().require_resource(WebSocketScope)
+    require_resource(WebSocketScope)
     await websocket.accept()
     message = await websocket.receive_text()
     await websocket.send_json(
@@ -50,12 +46,29 @@ async def ws_root(
     )
 
 
+class RouteComponent(Component):
+    @inject
+    async def start(self, ctx: Context, app: FastAPI = resource()) -> None:
+        app.add_api_route("/", root)
+        app.add_api_websocket_route("/ws", ws_root)
+
+
+@pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_fastapi_http(unused_tcp_port: int):
+async def test_fastapi_http(unused_tcp_port: int, method: str):
+    application = FastAPI()
+    if method == "static":
+        application.add_api_route("/", root)
+        components = {}
+    else:
+        components = {"myroutes": {"type": RouteComponent}}
+
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await FastAPIComponent(app=application, port=unused_tcp_port).start(ctx)
+        await FastAPIComponent(
+            components=components, app=application, port=unused_tcp_port
+        ).start(ctx)
 
         # Ensure that the application got added as a resource
         asgi_app = ctx.require_resource(ASGI3Application)
@@ -73,12 +86,22 @@ async def test_fastapi_http(unused_tcp_port: int):
         }
 
 
+@pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_fastapi_ws(unused_tcp_port: int):
+async def test_fastapi_ws(unused_tcp_port: int, method: str):
+    application = FastAPI()
+    if method == "static":
+        application.add_api_websocket_route("/ws", ws_root)
+        components = {}
+    else:
+        components = {"myroutes": {"type": RouteComponent}}
+
     async with Context() as ctx:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await FastAPIComponent(app=application, port=unused_tcp_port).start(ctx)
+        await FastAPIComponent(
+            components=components, app=application, port=unused_tcp_port
+        ).start(ctx)
 
         # Ensure that the application got added as a resource
         asgi_app = ctx.require_resource(ASGI3Application)

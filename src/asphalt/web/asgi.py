@@ -91,6 +91,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
             types.append(type(self.app))
 
         ctx.add_resource(self.app, types=types)
+        await super().start(ctx)
 
         server = uvicorn.Server(config)
         server.install_signal_handlers = lambda: None

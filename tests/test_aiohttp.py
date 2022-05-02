@@ -2,7 +2,7 @@ import json
 
 import pytest
 import websockets
-from asphalt.core import Context, inject, resource
+from asphalt.core import Component, Context, inject, require_resource, resource
 from httpx import AsyncClient
 
 
@@ -43,8 +43,20 @@ async def ws_root(
     )
 
 
+class RouteComponent(Component):
+    async def start(self, ctx: Context) -> None:
+        from aiohttp.web_app import Application
+        from aiohttp.web_routedef import RouteTableDef
+
+        routes = RouteTableDef()
+        routes.get("/")(root)
+        app = require_resource(Application)
+        app.router.add_routes(routes)
+
+
+@pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_aiohttp_http(unused_tcp_port: int):
+async def test_aiohttp_http(unused_tcp_port: int, method: str):
     pytest.importorskip("aiohttp", reason="aiohttp not available")
 
     from aiohttp.web_app import Application
@@ -52,16 +64,21 @@ async def test_aiohttp_http(unused_tcp_port: int):
 
     from asphalt.web.aiohttp import AIOHTTPComponent
 
-    routes = RouteTableDef()
-    routes.get("/")(root)
     application = Application()
-    application.add_routes(routes)
+    if method == "static":
+        routes = RouteTableDef()
+        routes.get("/")(root)
+        application.add_routes(routes)
+        components = {}
+    else:
+        components = {"myroutes": {"type": RouteComponent}}
+
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await AIOHTTPComponent(app=application, site={"port": unused_tcp_port}).start(
-            ctx
-        )
+        await AIOHTTPComponent(
+            components=components, app=application, site={"port": unused_tcp_port}
+        ).start(ctx)
 
         # Ensure that the application got added as a resource
         ctx.require_resource(Application)
