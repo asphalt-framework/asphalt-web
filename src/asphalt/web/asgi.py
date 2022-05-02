@@ -55,8 +55,8 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
     A component that serves the given ASGI 3.0 application via Uvicorn.
 
     :param asgiref.typing.ASGI3Application app: the ASGI application to serve
-    :param host: the IP address to bind to
-    :param port: the port to bind to (default: 8000)
+    :param str host: the IP address to bind to
+    :param int port: the port to bind to (default: 8000)
     """
 
     def __init__(

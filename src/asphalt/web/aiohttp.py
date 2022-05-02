@@ -30,7 +30,8 @@ class AIOHTTPComponent(ContainerComponent):
     A component that serves an aiohttp application.
 
     :param aiohttp.web_app.Application app: the application object
-    :param dict site: keyword arguments passed to :class:`aiohttp.web_runner.TCPSite`
+    :param str host: the IP address to bind to
+    :param int port: the port to bind to (default: 8000)
     """
 
     def __init__(
@@ -38,14 +39,15 @@ class AIOHTTPComponent(ContainerComponent):
         components: dict[str, dict[str, Any] | None] = None,
         *,
         app: str | Application | None = None,
-        site: dict[str, Any] | None = None,
+        host: str = "127.0.0.1",
+        port: int = 8000,
     ) -> None:
         super().__init__(components)
 
         self.app = resolve_reference(app) or Application()
         self.app.middlewares.append(asphalt_middleware)
-        self.site_options = site or {}
-        self.site_options.setdefault("port", 8000)
+        self.host = host
+        self.port = port
 
     @context_teardown
     async def start(self, ctx: Context) -> AsyncIterator[None]:
@@ -53,7 +55,7 @@ class AIOHTTPComponent(ContainerComponent):
         await super().start(ctx)
         runner = AppRunner(self.app)
         await runner.setup()
-        site = TCPSite(runner, **self.site_options)
+        site = TCPSite(runner, host=self.host, port=self.port)
         await site.start()
 
         yield
