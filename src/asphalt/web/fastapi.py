@@ -5,7 +5,7 @@ from inspect import Parameter, Signature, signature
 from typing import Any, TypeVar
 
 from asgiref.typing import ASGI3Application
-from asphalt.core import current_context
+from asphalt.core import require_resource
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
@@ -21,7 +21,7 @@ class _AsphaltDependency:
     cls: type = field(init=False)
 
     async def __call__(self):
-        return await current_context().request_resource(self.cls, self.name)
+        return require_resource(self.cls, self.name)
 
     def __hash__(self):
         return hash((self.name, self.cls))

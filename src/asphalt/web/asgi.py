@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from asyncio import create_task, sleep
-from inspect import isclass, isfunction
-
 from dataclasses import dataclass
+from inspect import isfunction
 from typing import Any, Dict, Generic, Optional, TypeVar
 
 import uvicorn

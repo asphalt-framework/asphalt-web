@@ -1,8 +1,7 @@
 import pytest
 from asgiref.typing import ASGI3Application
-from django.core.handlers.asgi import ASGIHandler
-
 from asphalt.core import Context
+from django.core.handlers.asgi import ASGIHandler
 from httpx import AsyncClient
 
 

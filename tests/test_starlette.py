@@ -2,7 +2,7 @@ import json
 
 import pytest
 import websockets
-from asgiref.typing import HTTPScope, WebSocketScope, ASGI3Application
+from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
 from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
 from starlette.applications import Starlette

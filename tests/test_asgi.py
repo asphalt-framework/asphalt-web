@@ -5,10 +5,11 @@ from urllib.parse import parse_qs
 import pytest
 import websockets
 from asgiref.typing import (
+    ASGI3Application,
     ASGIReceiveCallable,
     ASGISendCallable,
     HTTPScope,
-    WebSocketScope, ASGI3Application,
+    WebSocketScope,
 )
 from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
