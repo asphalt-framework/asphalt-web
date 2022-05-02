@@ -2,6 +2,8 @@ import json
 
 import pytest
 import websockets
+from aiohttp.abc import Request
+from aiohttp.web_middlewares import middleware
 from asphalt.core import Component, Context, inject, require_resource, resource
 from httpx import AsyncClient
 
@@ -49,6 +51,16 @@ class RouteComponent(Component):
 
         app = require_resource(Application)
         app.router.add_route("GET", "/", root)
+
+
+def setup_text_replacer(app, *, text: str, replacement: str) -> None:
+    @middleware
+    async def text_replacer(request: Request, handler) -> None:
+        response = await handler(request)
+        response.text = response.text.replace(text, replacement)
+        return response
+
+    app.middlewares.append(text_replacer)
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
@@ -120,3 +132,53 @@ async def test_aiohttp_ws(unused_tcp_port: int):
                 "my resource": "foo",
                 "another resource": "bar",
             }
+
+
+@pytest.mark.parametrize("method", ["direct", "dict"])
+@pytest.mark.asyncio
+async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
+    pytest.importorskip("aiohttp", reason="aiohttp not available")
+
+    from aiohttp.web_app import Application
+
+    from asphalt.web.aiohttp import AIOHTTPComponent
+
+    application = Application()
+    application.router.add_route("GET", "/", root)
+
+    @middleware
+    async def text_replacer(request: Request, handler) -> None:
+        response = await handler(request)
+        response.text = response.text.replace("Hello World", "Hello Middleware")
+        return response
+
+    if method == "direct":
+        middlewares = [text_replacer]
+    else:
+        middlewares = [
+            {
+                "type": f"{__name__}:setup_text_replacer",
+                "text": "Hello World",
+                "replacement": "Hello Middleware",
+            }
+        ]
+
+    async with Context() as ctx, AsyncClient() as http:
+        ctx.add_resource("foo")
+        ctx.add_resource("bar", name="another")
+        await AIOHTTPComponent(
+            app=application, port=unused_tcp_port, middlewares=middlewares
+        ).start(ctx)
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(Application)
+
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
+        response.raise_for_status()
+        assert response.json() == {
+            "message": "Hello Middleware",
+            "my resource": "foo",
+            "another resource": "bar",
+        }

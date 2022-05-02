@@ -138,3 +138,14 @@ with Asphalt's. To make the two frameworks play well together, one needs to use
 :func:`~fastapi.param_functions.Depends` for injecting Asphalt resources. Beyond that,
 things should work the same. And of course you can have both FastAPI and Asphalt
 dependencies in the same handler function.
+
+Adding middleware
+-----------------
+
+All applications will be automatically wrapped by the Asphalt middleware, but you can
+add your own middleware on top of that. All frameworks supported here (except aiohttp)
+can be wrapped with ASGI 3.0 middleware, while aiohttp will need its own specific kind
+of middleware.
+
+.. note:: The application resource available on the global context is the unwrapped
+          application, and is unaffected by middleware.

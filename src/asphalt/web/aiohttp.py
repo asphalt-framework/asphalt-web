@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, Coroutine, Sequence
+from inspect import iscoroutinefunction
 from typing import Any
 
 from aiohttp.web_app import Application
@@ -36,6 +37,8 @@ class AIOHTTPComponent(ContainerComponent):
         (default: the value of
         `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
         ignored if an application object is explicitly passed in)
+    :param middlewares: list of compatible coroutine functions or dicts to be added as
+        middleware using :meth:`add_middleware`
     """
 
     def __init__(
@@ -46,14 +49,51 @@ class AIOHTTPComponent(ContainerComponent):
         host: str = "127.0.0.1",
         port: int = 8000,
         debug: bool | None = None,
+        middlewares: Sequence[
+            Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]
+        ] = (),
     ) -> None:
         super().__init__(components)
 
         debug = debug if isinstance(debug, bool) else __debug__
         self.app = resolve_reference(app) or Application(debug=debug)
-        self.app.middlewares.append(asphalt_middleware)
         self.host = host
         self.port = port
+
+        self.add_middleware(asphalt_middleware)
+        for mw in middlewares:
+            self.add_middleware(mw)
+
+    def add_middleware(
+        self, middleware: Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]
+    ) -> None:
+        """
+        Add middleware to the application.
+
+        :param middleware: either a special coroutine function (as specified here_), or
+            a dictionary containing a reference to a setup function. This dictionary
+            must contain the key ``type`` which is a non-async callable (or a
+            module:varname reference to one) and which will be called with the
+            application object as the first positional argument and the rest of the keys
+            in the dict as keyword arguments.
+
+        .. _here: \
+https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
+
+        """
+        if isinstance(middleware, dict):
+            setup = resolve_reference(middleware.pop("type", None))
+            if not callable(setup):
+                raise TypeError(f"Setup function ({setup}) is not callable")
+
+            setup(self.app, **middleware)
+        elif iscoroutinefunction(middleware):
+            self.app.middlewares.append(middleware)
+        else:
+            raise TypeError(
+                f"middleware must be either a coroutine function or a dict, not "
+                f"{middleware!r}"
+            )
 
     @context_teardown
     async def start(self, ctx: Context) -> AsyncIterator[None]:
