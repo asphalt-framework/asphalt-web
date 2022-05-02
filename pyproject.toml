@@ -27,13 +27,13 @@ classifiers = [
 ]
 dependencies = [
     "aiohttp >= 3.8; (extra == 'test' or extra == 'doc' or extra == 'aiohttp') and python_version < '3.11'",
-    "asgiref ~= 3.5; extra == 'test' or extra == 'doc' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
+    "asgiref ~= 3.5; extra == 'test' or extra == 'doc' or extra == 'asgi3' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
     "asphalt ~= 4.8",
     "Django >= 3.2; (extra == 'test' and platform_python_implementation == 'CPython') or extra == 'doc' or extra == 'django'",
     "fastapi >= 0.75; extra == 'test' or extra == 'doc' or extra == 'fastapi'",
     "starlette >= 0.17; extra == 'test' or extra == 'doc' or extra == 'starlette'",
     "typeguard ~= 2.0",
-    "uvicorn >= 0.17.6; extra == 'test' or extra == 'doc' or extra == 'asgi' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
+    "uvicorn >= 0.17.6; extra == 'test' or extra == 'doc' or extra == 'asgi3' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
 ]
 dynamic = ["version"]
 
@@ -62,7 +62,7 @@ starlette = []
 
 [project.entry-points."asphalt.components"]
 aiohttp = "asphalt.web.aiohttp:AIOHTTPComponent"
-asgi = "asphalt.web.asgi:ASGIComponent"
+asgi3 = "asphalt.web.asgi3:ASGIComponent"
 django = "asphalt.web.django:DjangoComponent"
 fastapi = "asphalt.web.fastapi:FastAPIComponent"
 starlette = "asphalt.web.starlette:StarletteComponent"

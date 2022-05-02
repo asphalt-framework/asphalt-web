@@ -6,11 +6,11 @@ Integrations
 ASGI 3.0
 --------
 
-Component: ``asgi`` (:class:`~.asgi.ASGIComponent`)
+Component: ``asgi3`` (:class:`~.asgi3.ASGIComponent`)
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/asgi
+Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/asgi3
 
-This is a generic integration for ASGI applications.
+This is a generic integration for ASGI 3.0 applications.
 
 Resources available on the global context:
 

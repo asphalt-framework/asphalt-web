@@ -1,5 +1,5 @@
 async def application(scope, receive, send):
-    """Trivial example of a raw ASGI application without a framework."""
+    """Trivial example of a raw ASGI 3.0 application without a framework."""
     if scope["type"] == "http":
         await receive()
         await send(

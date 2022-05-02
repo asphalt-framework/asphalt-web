@@ -14,7 +14,7 @@ from asgiref.typing import (
 from asphalt.core import Context, current_context, inject, resource
 from httpx import AsyncClient
 
-from asphalt.web.asgi import ASGIComponent
+from asphalt.web.asgi3 import ASGIComponent
 
 
 @inject

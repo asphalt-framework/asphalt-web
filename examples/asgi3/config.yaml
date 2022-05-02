@@ -1,5 +1,5 @@
 services:
   static:
     component:
-      type: asgi
+      type: asgi3
       app: static:application

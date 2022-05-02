@@ -9,7 +9,7 @@ from asphalt.core import require_resource
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
-from .asgi import ASGIComponent
+from .asgi3 import ASGIComponent
 from .starlette import AsphaltMiddleware
 
 

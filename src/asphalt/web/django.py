@@ -8,7 +8,7 @@ from django.core.handlers.asgi import ASGIHandler, ASGIRequest
 from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import async_only_middleware
 
-from .asgi import ASGIComponent
+from .asgi3 import ASGIComponent
 
 
 @async_only_middleware

@@ -38,12 +38,12 @@ its ``views.py`` module is presented here. The complete example can be found in 
 
          .. tab:: static.py
 
-            .. include:: ../examples/asgi/static.py
+            .. include:: ../examples/asgi3/static.py
                :code: python3
 
          .. tab:: config.yaml
 
-            .. include:: ../examples/asgi/config.yaml
+            .. include:: ../examples/asgi3/config.yaml
                :code: yaml
 
    .. tab:: FastAPI

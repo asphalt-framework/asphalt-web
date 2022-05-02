@@ -2,7 +2,7 @@
 
 To install the prerequisites for this example::
 
-    pip install asphalt-web[asgi]
+    pip install asphalt-web[asgi3]
 
 To start the example::
 

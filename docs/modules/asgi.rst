@@ -1,5 +1,5 @@
-:mod:`asphalt.web.asgi`
-=======================
+:mod:`asphalt.web.asgi3`
+========================
 
-.. automodule:: asphalt.web.asgi
+.. automodule:: asphalt.web.asgi3
     :members:

@@ -10,7 +10,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
-from asphalt.web.asgi import ASGIComponent
+from asphalt.web.asgi3 import ASGIComponent
 
 
 class AsphaltMiddleware(BaseHTTPMiddleware):
