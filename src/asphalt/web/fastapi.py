@@ -34,6 +34,15 @@ class _AsphaltDependency:
 
 
 def AsphaltDepends(name: str = "default") -> Any:
+    """
+    Asphalt's version of FastAPI's :func:`~fastapi.Depends`.
+
+    This should be marked as the default value on a parameter that should receive an
+    Asphalt resource.
+
+    :param name: the name of the resource within its unique type (default: ``default``)
+
+    """
     return Depends(_AsphaltDependency(name))
 
 

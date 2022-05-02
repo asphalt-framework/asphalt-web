@@ -101,8 +101,8 @@ This integration is based on the ASGI 3.0 integration.
 FastAPI has its own dependency injection system which means Asphalt resources must be
 injected a bit differently in FastAPI endpoints. Instead of using
 :func:`~fastapi.Depends` as the default value for a resource parameter you wish to
-inject, you need to use :func:`~asphalt.web.fastapi.AsphaltDepends` instead. The
-machinery in :class:`~asphalt.web.fastapi.FastAPIComponent` will handle the appropriate
+inject, you need to use :func:`~.fastapi.AsphaltDepends` instead. The
+machinery in :class:`~.fastapi.FastAPIComponent` will handle the appropriate
 translation.
 
 Resources available on the global context:
