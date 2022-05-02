@@ -6,7 +6,7 @@ Integrations
 ASGI 3.0
 --------
 
-Component: ``asgi`` (:class:`.asgi.ASGIComponent`)
+Component: ``asgi`` (:class:`~.asgi.ASGIComponent`)
 
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/asgi
 
@@ -29,7 +29,7 @@ Resources available to request handlers:
 Django
 ------
 
-Component: ``django`` (:class:`.django.DjangoComponent`)
+Component: ``django`` (:class:`~.django.DjangoComponent`)
 
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/django
 
@@ -58,7 +58,7 @@ Resources available to request handlers:
 Starlette
 ---------
 
-Component: ``starlette`` (:class:`.starlette.StarletteComponent`)
+Component: ``starlette`` (:class:`~.starlette.StarletteComponent`)
 
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/starlette
 
@@ -92,7 +92,7 @@ Resources available to websocket handlers:
 FastAPI
 -------
 
-Component: ``fastapi`` (:class:`.fastapi.FastAPIComponent`)
+Component: ``fastapi`` (:class:`~.fastapi.FastAPIComponent`)
 
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/fastapi
 
@@ -133,7 +133,7 @@ Resources available to websocket handlers:
 AIOHTTP
 -------
 
-Component: ``aiohttp`` (:class:`.aiohttp.AIOHTTPComponent`)
+Component: ``aiohttp`` (:class:`~.aiohttp.AIOHTTPComponent`)
 
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/aiohttp
 

@@ -29,5 +29,11 @@ class AsphaltMiddleware(BaseHTTPMiddleware):
 
 
 class StarletteComponent(ASGIComponent[Starlette]):
+    """
+    A component that serves a Starlette application.
+
+    :param starlette.applications.Starlette app: the Starlette application object
+    """
+
     def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)

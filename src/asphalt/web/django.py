@@ -25,7 +25,11 @@ def AsphaltMiddleware(get_response: Callable[[HttpRequest], Awaitable[HttpRespon
 
 
 class DjangoComponent(ASGIComponent[ASGIHandler]):
-    """ """
+    """
+    A component that serves a Django application.
+
+    :param django.core.handlers.asgi.ASGIHandler app: the Django ASGI handler object
+    """
 
     def wrap_in_middleware(self, app: ASGIHandler) -> ASGI3Application:
         return app

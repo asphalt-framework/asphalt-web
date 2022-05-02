@@ -38,6 +38,12 @@ def AsphaltDepends(name: str = "default") -> Any:
 
 
 class FastAPIComponent(ASGIComponent[FastAPI]):
+    """
+    A component that serves a FastAPI application.
+
+    :param fastapi.FastAPI app: the FastAPI application object
+    """
+
     def wrap_in_middleware(self, app: FastAPI) -> ASGI3Application:
         # Convert Asphalt dependencies into FastAPI dependencies
         for route in app.router.routes:
