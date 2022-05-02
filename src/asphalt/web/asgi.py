@@ -19,7 +19,6 @@ from asphalt.core import (
     ContainerComponent,
     Context,
     context_teardown,
-    current_context,
     resolve_reference,
 )
 from uvicorn import Config
@@ -44,7 +43,6 @@ class AsphaltMiddleware:
         self, scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
     ) -> None:
         if scope["type"] in ("http", "websocket"):
-            assert current_context() is not None
             async with Context() as ctx:
                 scope_type = HTTPScope if scope["type"] == "http" else WebSocketScope
                 ctx.add_resource(scope, types=[scope_type])
@@ -97,7 +95,6 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
 
         server = uvicorn.Server(config)
         server.install_signal_handlers = lambda: None
-        assert current_context() is ctx
         server_task = create_task(server.serve())
         while not server.started:
             await sleep(0)
