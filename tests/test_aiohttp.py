@@ -2,8 +2,6 @@ import json
 
 import pytest
 import websockets
-from aiohttp.abc import Request
-from aiohttp.web_middlewares import middleware
 from asphalt.core import Component, Context, inject, require_resource, resource
 from httpx import AsyncClient
 
@@ -54,6 +52,9 @@ class RouteComponent(Component):
 
 
 def setup_text_replacer(app, *, text: str, replacement: str) -> None:
+    from aiohttp.abc import Request
+    from aiohttp.web_middlewares import middleware
+
     @middleware
     async def text_replacer(request: Request, handler) -> None:
         response = await handler(request)
@@ -139,7 +140,9 @@ async def test_aiohttp_ws(unused_tcp_port: int):
 async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
     pytest.importorskip("aiohttp", reason="aiohttp not available")
 
+    from aiohttp.abc import Request
     from aiohttp.web_app import Application
+    from aiohttp.web_middlewares import middleware
 
     from asphalt.web.aiohttp import AIOHTTPComponent
 
