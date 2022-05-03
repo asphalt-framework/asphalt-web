@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 
 
 @pytest.mark.asyncio
-async def test_django_http(unused_tcp_port: int):
+async def test_http(unused_tcp_port: int):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")

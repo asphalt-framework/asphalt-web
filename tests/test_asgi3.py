@@ -115,7 +115,7 @@ class TextReplacerMiddleware:
 
 
 @pytest.mark.asyncio
-async def test_asgi_http(unused_tcp_port: int):
+async def test_http(unused_tcp_port: int):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
@@ -137,7 +137,7 @@ async def test_asgi_http(unused_tcp_port: int):
 
 
 @pytest.mark.asyncio
-async def test_asgi_ws(unused_tcp_port: int):
+async def test_ws(unused_tcp_port: int):
     async with Context() as ctx:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
@@ -159,7 +159,7 @@ async def test_asgi_ws(unused_tcp_port: int):
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
 @pytest.mark.asyncio
-async def test_asgi_middleware(unused_tcp_port: int, method: str):
+async def test_middleware(unused_tcp_port: int, method: str):
     middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
     if method == "direct":
         middlewares = [lambda app: TextReplacerMiddleware(app, "World", "Middleware")]

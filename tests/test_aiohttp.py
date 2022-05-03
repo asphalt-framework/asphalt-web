@@ -31,7 +31,7 @@ def setup_text_replacer(app, *, text: str, replacement: str) -> None:
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_aiohttp_http(unused_tcp_port: int, method: str):
+async def test_http(unused_tcp_port: int, method: str):
     @inject
     async def root(
         request,
@@ -82,7 +82,7 @@ async def test_aiohttp_http(unused_tcp_port: int, method: str):
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_aiohttp_ws(unused_tcp_port: int, method: str):
+async def test_ws(unused_tcp_port: int, method: str):
     @inject
     async def ws_root(
         request,
@@ -135,7 +135,7 @@ async def test_aiohttp_ws(unused_tcp_port: int, method: str):
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
 @pytest.mark.asyncio
-async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
+async def test_middleware(unused_tcp_port: int, method: str):
     @middleware
     async def text_replacer(request: Request, handler) -> None:
         response = await handler(request)
@@ -176,7 +176,7 @@ async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
         assert response.text == "Hello Middleware"
 
 
-def test_aiohttp_bad_middleware_type():
+def test_bad_middleware_type():
     with pytest.raises(
         TypeError,
         match="middleware must be either a coroutine function or a dict, not 'foo'",
@@ -184,6 +184,6 @@ def test_aiohttp_bad_middleware_type():
         AIOHTTPComponent(middlewares=["foo"])
 
 
-def test_aiohttp_bad_middleware_dict():
+def test_bad_middleware_dict():
     with pytest.raises(TypeError, match=r"Setup function \(1\) is not callable"):
         AIOHTTPComponent(middlewares=[{"type": 1}])

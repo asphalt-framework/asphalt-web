@@ -21,7 +21,7 @@ from .test_asgi3 import TextReplacerMiddleware
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_starlette_http(unused_tcp_port: int, method: str):
+async def test_http(unused_tcp_port: int, method: str):
     @inject
     async def root(
         request: Request,
@@ -77,7 +77,7 @@ async def test_starlette_http(unused_tcp_port: int, method: str):
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_starlette_ws(unused_tcp_port: int, method: str):
+async def test_ws(unused_tcp_port: int, method: str):
     @inject
     async def ws_root(
         websocket: WebSocket,

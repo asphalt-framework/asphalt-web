@@ -21,7 +21,7 @@ from .test_asgi3 import TextReplacerMiddleware
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_fastapi_http(unused_tcp_port: int, method: str):
+async def test_http(unused_tcp_port: int, method: str):
     async def root(
         request: Request,
         my_resource: str = AsphaltDepends(),
@@ -75,7 +75,7 @@ async def test_fastapi_http(unused_tcp_port: int, method: str):
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
-async def test_fastapi_ws(unused_tcp_port: int, method: str):
+async def test_ws(unused_tcp_port: int, method: str):
     async def ws_root(
         websocket: WebSocket,
         my_resource: str = AsphaltDepends(),
