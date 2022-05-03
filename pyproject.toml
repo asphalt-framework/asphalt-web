@@ -40,7 +40,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/asphalt-framework/asphalt-web"
+Documentation = "https://asphalt-web.readthedocs.org/en/latest/"
+"Source code" = "https://github.com/asphalt-framework/asphalt-web"
+"Issue tracker" = "https://github.com/asphalt-framework/asphalt-web/issues"
+"Help and support" = "https://github.com/asphalt-framework/asphalt/wiki/Help-and-support"
 
 [project.optional-dependencies]
 test = [
