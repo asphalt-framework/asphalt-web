@@ -29,6 +29,7 @@ exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 highlight_language = "python3"
 todo_include_todos = False
+autodoc_inherit_docstrings = False
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
