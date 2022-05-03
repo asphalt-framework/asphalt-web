@@ -31,6 +31,9 @@ Django
 
 Component: ``django`` (:class:`~.django.DjangoComponent`)
 
+Requires manual insertion of the ``asphalt.web.django.AsphaltMiddleware`` middleware
+to the ``MIDDLEWARE`` list in ``settings.py`` for resource injection to work.
+
 Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/django
 
 This integration is based on the ASGI 3.0 integration.

@@ -28,7 +28,9 @@ installed to the application.
 
 Django is an exception to this, as it requires a specific project structure. For Django,
 its ``views.py`` module is presented here. The complete example can be found in the
-:github:`repository <examples/django>`.
+:github:`repository <examples/django>`. In particular it should be noted that the
+Asphalt middleware (needed for resource injection) needs to be added to ``MIDDLEWARE``
+in the project's ``settings.py`` file.
 
 .. tabs::
 
