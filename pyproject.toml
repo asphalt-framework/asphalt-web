@@ -35,7 +35,6 @@ dependencies = [
     "Django >= 3.2; (extra == 'test' and platform_python_implementation == 'CPython') or extra == 'doc' or extra == 'django'",
     "fastapi >= 0.75; extra == 'test' or extra == 'doc' or extra == 'fastapi'",
     "starlette >= 0.17; extra == 'test' or extra == 'doc' or extra == 'starlette'",
-    "typeguard ~= 2.0",
     "uvicorn >= 0.17.6; extra == 'test' or extra == 'doc' or extra == 'asgi3' or extra == 'starlette' or extra == 'fastapi' or extra == 'django'",
 ]
 dynamic = ["version"]
