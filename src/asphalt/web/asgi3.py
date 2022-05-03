@@ -67,14 +67,14 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         self,
         components: dict[str, dict[str, Any] | None] = None,
         *,
-        app: T_Application,
+        app: T_Application | str,
         host: str = "127.0.0.1",
         port: int = 8000,
         middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]] = (),
     ) -> None:
         super().__init__(components)
         self.app: T_Application = resolve_reference(app)
-        self.original_app = app
+        self.original_app = self.app
         self.host = host
         self.port = port
 
