@@ -45,7 +45,6 @@ Homepage = "https://github.com/asphalt-framework/asphalt-web"
 test = [
     "pytest",
     "pytest-asyncio",
-    "pytest-cov",
     "httpx",
     "websockets"
 ]
