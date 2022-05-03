@@ -8,7 +8,7 @@ ASGI 3.0
 
 Component: ``asgi3`` (:class:`~.asgi3.ASGIComponent`)
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/asgi3
+Example: :github:`examples/asgi3`
 
 This is a generic integration for ASGI 3.0 applications.
 
@@ -34,7 +34,7 @@ Component: ``django`` (:class:`~.django.DjangoComponent`)
 Requires manual insertion of the ``asphalt.web.django.AsphaltMiddleware`` middleware
 to the ``MIDDLEWARE`` list in ``settings.py`` for resource injection to work.
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/django
+Example: :github:`examples/django`
 
 This integration is based on the ASGI 3.0 integration.
 
@@ -63,7 +63,7 @@ Starlette
 
 Component: ``starlette`` (:class:`~.starlette.StarletteComponent`)
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/starlette
+Example: :github:`examples/starlette`
 
 This integration is based on the ASGI 3.0 integration.
 
@@ -97,7 +97,7 @@ FastAPI
 
 Component: ``fastapi`` (:class:`~.fastapi.FastAPIComponent`)
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/fastapi
+Example: :github:`examples/fastapi`
 
 This integration is based on the ASGI 3.0 integration.
 
@@ -138,7 +138,7 @@ AIOHTTP
 
 Component: ``aiohttp`` (:class:`~.aiohttp.AIOHTTPComponent`)
 
-Example: https://github.com/asphalt-framework/asphalt-web/tree/master/examples/aiohttp
+Example: :github:`examples/aiohttp`
 
 Unlike the other frameworks supported here, AIOHTTP is not based on the ASGI standard.
 
