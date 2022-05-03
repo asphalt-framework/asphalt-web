@@ -87,7 +87,6 @@ testpaths = ["tests"]
 
 [tool.mypy]
 python_version = "3.7"
-ignore_missing_imports = true
 
 [tool.coverage.run]
 source = ["asphalt.web"]
