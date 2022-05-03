@@ -39,7 +39,7 @@ def AsphaltDepends(name: str = "default") -> Any:
     This should be marked as the default value on a parameter that should receive an
     Asphalt resource.
 
-    :param name: the name of the resource within its unique type (default: ``default``)
+    :param name: the name of the resource within its unique type
 
     """
     return Depends(_AsphaltDependency(name))
