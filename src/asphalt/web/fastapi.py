@@ -22,12 +22,12 @@ class _AsphaltDependency:
     async def __call__(self):
         return require_resource(self.cls, self.name)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self.name, self.cls))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, _AsphaltDependency):
-            return self.name == other.name and self.cls is other.cls
+            return self.name == other.name and self.cls == other.cls
 
         return NotImplemented
 
