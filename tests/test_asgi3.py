@@ -34,25 +34,29 @@ async def application(
         current_context().require_resource(HTTPScope)
         query = parse_qs(cast(bytes, scope["query_string"]))
         await receive()
+
+        body = json.dumps(
+            {
+                "message": query[b"param"][0].decode(),
+                "my resource": my_resource,
+                "another resource": another_resource,
+            }
+        ).encode()
+
         await send(
             {
                 "type": "http.response.start",
                 "status": 200,
                 "headers": [
-                    [b"content-type", b"application/json"],
+                    (b"content-type", b"application/json"),
+                    (b"content-length", b"%d" % len(body)),
                 ],
             }
         )
         await send(
             {
                 "type": "http.response.body",
-                "body": json.dumps(
-                    {
-                        "message": query[b"param"][0].decode(),
-                        "my resource": my_resource,
-                        "another resource": another_resource,
-                    }
-                ).encode(),
+                "body": body,
                 "more_body": False,
             }
         )
@@ -88,9 +92,22 @@ class TextReplacerMiddleware:
     async def __call__(
         self, scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
     ) -> None:
+        start_event: ASGISendEvent
+
         async def wrapped_send(event: ASGISendEvent) -> None:
-            if event["type"] == "http.response.body":
+            nonlocal start_event
+
+            if event["type"] == "http.response.start":
+                start_event = event
+                return
+            elif event["type"] == "http.response.body":
                 event["body"] = event["body"].replace(self.text, self.replacement)
+                for i, (key, value) in enumerate(start_event["headers"]):
+                    if key == b"content-length":
+                        start_event["headers"][i] = key, b"%d" % len(event["body"])
+                        break
+
+                await send(start_event)
 
             await send(event)
 

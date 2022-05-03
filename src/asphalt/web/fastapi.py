@@ -6,7 +6,7 @@ from inspect import Signature, signature
 from typing import Any, get_type_hints
 
 from asgiref.typing import ASGI3Application
-from asphalt.core import Context, require_resource
+from asphalt.core import Context, require_resource, resolve_reference
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
@@ -81,6 +81,32 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
 
     def setup_asphalt_middleware(self, app: FastAPI) -> ASGI3Application:
         return AsphaltMiddleware(app)
+
+    def add_middleware(
+        self, middleware: Callable[..., ASGI3Application] | dict[str, Any]
+    ) -> None:
+        """
+        Add a middleware to the application.
+
+        Unlike the raw ASGI version of this method, this one adds the middleware to
+        FastAPI's own middleware stack instead of wrapping the application directly.
+
+        :param middleware: either a callable that takes the application object and
+            returns an ASGI 3.0 application, or a dictionary containing a reference to
+            such a callable. This dictionary must contain the key ``type`` which is a
+            non-async callable (or a module:varname reference to one) and which will be
+            called with the application object as the first positional argument and the
+            rest of the keys in the dict as keyword arguments.
+
+        """
+        if isinstance(middleware, dict):
+            type_ = resolve_reference(middleware.pop("type", None))
+            if not callable(type_):
+                raise TypeError(f"Middleware ({type_}) is not callable")
+
+            self.app.add_middleware(type_, **middleware)
+        else:
+            self.app.add_middleware(middleware)
 
     async def start_server(self, ctx: Context) -> None:
         # Convert Asphalt dependencies into FastAPI dependencies

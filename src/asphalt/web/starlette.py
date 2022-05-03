@@ -4,7 +4,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Context, current_context
+from asphalt.core import Context, current_context, resolve_reference
 from starlette.applications import Starlette
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
@@ -67,3 +67,29 @@ class StarletteComponent(ASGIComponent[Starlette]):
 
     def setup_asphalt_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)
+
+    def add_middleware(
+        self, middleware: Callable[..., ASGI3Application] | dict[str, Any]
+    ) -> None:
+        """
+        Add a middleware to the application.
+
+        Unlike the raw ASGI version of this method, this one adds the middleware to
+        Starlette's own middleware stack instead of wrapping the application directly.
+
+        :param middleware: either a callable that takes the application object and
+            returns an ASGI 3.0 application, or a dictionary containing a reference to
+            such a callable. This dictionary must contain the key ``type`` which is a
+            non-async callable (or a module:varname reference to one) and which will be
+            called with the application object as the first positional argument and the
+            rest of the keys in the dict as keyword arguments.
+
+        """
+        if isinstance(middleware, dict):
+            type_ = resolve_reference(middleware.pop("type", None))
+            if not callable(type_):
+                raise TypeError(f"Middleware ({type_}) is not callable")
+
+            self.app.add_middleware(type_, **middleware)
+        else:
+            self.app.add_middleware(middleware)

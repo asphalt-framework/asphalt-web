@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from asgiref.typing import ASGI3Application
 from asphalt.core import Context

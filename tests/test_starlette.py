@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import json
+from collections.abc import Callable, Sequence
+from typing import Any
 
 import pytest
 import websockets
@@ -11,6 +15,8 @@ from starlette.responses import JSONResponse, Response
 from starlette.websockets import WebSocket
 
 from asphalt.web.starlette import StarletteComponent
+
+from .test_asgi3 import TextReplacerMiddleware
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
@@ -123,3 +129,36 @@ async def test_starlette_ws(unused_tcp_port: int, method: str):
                 "my resource": "foo",
                 "another resource": "bar",
             }
+
+
+@pytest.mark.parametrize("method", ["direct", "dict"])
+@pytest.mark.asyncio
+async def test_middleware(unused_tcp_port: int, method: str):
+    middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
+    if method == "direct":
+        middlewares = [lambda app: TextReplacerMiddleware(app, "World", "Middleware")]
+    else:
+        middlewares = [
+            {
+                "type": f"{__name__}:TextReplacerMiddleware",
+                "text": "World",
+                "replacement": "Middleware",
+            }
+        ]
+
+    async def root(request: Request) -> Response:
+        return Response("Hello World")
+
+    application = Starlette()
+    application.add_route("/", root)
+    async with Context() as ctx, AsyncClient() as http:
+        await StarletteComponent(
+            port=unused_tcp_port, app=application, middlewares=middlewares
+        ).start(ctx)
+
+        # Ensure that the application responds correctly to an HTTP request
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
+        response.raise_for_status()
+        assert response.text == "Hello Middleware"
