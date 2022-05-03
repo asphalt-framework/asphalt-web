@@ -33,10 +33,6 @@ class AIOHTTPComponent(ContainerComponent):
     :param app: the application object, or a module:varname reference to one
     :param host: the IP address to bind to
     :param port: the port to bind to
-    :param debug: whether to enable debug mode in an implicitly created application
-        (default: the value of
-        `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
-        ignored if an application object is explicitly passed in)
     :param middlewares: list of compatible coroutine functions or dicts to be added as
         middleware using :meth:`add_middleware`
     """
@@ -48,15 +44,13 @@ class AIOHTTPComponent(ContainerComponent):
         app: Application | str | None = None,
         host: str = "127.0.0.1",
         port: int = 8000,
-        debug: bool | None = None,
         middlewares: Sequence[
             Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]
         ] = (),
     ) -> None:
         super().__init__(components)
 
-        debug = debug if isinstance(debug, bool) else __debug__
-        self.app = resolve_reference(app) or Application(debug=debug)
+        self.app = resolve_reference(app) or Application()
         self.host = host
         self.port = port
 
