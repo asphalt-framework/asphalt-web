@@ -5,11 +5,19 @@ import websockets
 from asphalt.core import Component, Context, inject, require_resource, resource
 from httpx import AsyncClient
 
+try:
+    from aiohttp.abc import Request
+    from aiohttp.web_app import Application
+    from aiohttp.web_middlewares import middleware
+    from aiohttp.web_response import Response, json_response
+    from aiohttp.web_ws import WebSocketResponse
+
+    from asphalt.web.aiohttp import AIOHTTPComponent
+except ModuleNotFoundError:
+    pytestmark = pytest.mark.skip("aiohttp not available")
+
 
 def setup_text_replacer(app, *, text: str, replacement: str) -> None:
-    from aiohttp.abc import Request
-    from aiohttp.web_middlewares import middleware
-
     @middleware
     async def text_replacer(request: Request, handler) -> None:
         response = await handler(request)
@@ -22,20 +30,12 @@ def setup_text_replacer(app, *, text: str, replacement: str) -> None:
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
 async def test_aiohttp_http(unused_tcp_port: int, method: str):
-    pytest.importorskip("aiohttp", reason="aiohttp not available")
-
-    from aiohttp.web_app import Application
-
-    from asphalt.web.aiohttp import AIOHTTPComponent
-
     @inject
     async def root(
         request,
         my_resource: str = resource(),
         another_resource: str = resource("another"),
     ):
-        from aiohttp.web_response import json_response
-
         return json_response(
             {
                 "message": request.query["param"],
@@ -81,13 +81,6 @@ async def test_aiohttp_http(unused_tcp_port: int, method: str):
 @pytest.mark.parametrize("method", ["static", "dynamic"])
 @pytest.mark.asyncio
 async def test_aiohttp_ws(unused_tcp_port: int, method: str):
-    pytest.importorskip("aiohttp", reason="aiohttp not available")
-
-    from aiohttp.web_app import Application
-    from aiohttp.web_ws import WebSocketResponse
-
-    from asphalt.web.aiohttp import AIOHTTPComponent
-
     @inject
     async def ws_root(
         request,
@@ -141,15 +134,6 @@ async def test_aiohttp_ws(unused_tcp_port: int, method: str):
 @pytest.mark.parametrize("method", ["direct", "dict"])
 @pytest.mark.asyncio
 async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
-    pytest.importorskip("aiohttp", reason="aiohttp not available")
-
-    from aiohttp.abc import Request
-    from aiohttp.web_app import Application
-    from aiohttp.web_middlewares import middleware
-    from aiohttp.web_response import Response
-
-    from asphalt.web.aiohttp import AIOHTTPComponent
-
     @middleware
     async def text_replacer(request: Request, handler) -> None:
         response = await handler(request)
@@ -188,3 +172,16 @@ async def test_aiohttp_middleware(unused_tcp_port: int, method: str):
         )
         response.raise_for_status()
         assert response.text == "Hello Middleware"
+
+
+def test_aiohttp_bad_middleware_type():
+    with pytest.raises(
+        TypeError,
+        match="middleware must be either a coroutine function or a dict, not 'foo'",
+    ):
+        AIOHTTPComponent(middlewares=["foo"])
+
+
+def test_aiohttp_bad_middleware_dict():
+    with pytest.raises(TypeError, match=r"Setup function \(1\) is not callable"):
+        AIOHTTPComponent(middlewares=[{"type": 1}])
