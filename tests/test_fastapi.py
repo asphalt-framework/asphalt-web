@@ -11,7 +11,7 @@ from asphalt.core import Component, Context, inject, require_resource, resource
 from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, PlainTextResponse, Response
 from starlette.websockets import WebSocket
 
 from asphalt.web.fastapi import AsphaltDepends, FastAPIComponent
@@ -160,7 +160,7 @@ async def test_middleware(unused_tcp_port: int, method: str):
         ]
 
     async def root(request: Request) -> Response:
-        return Response("Hello World")
+        return PlainTextResponse("Hello World")
 
     application = FastAPI()
     application.add_api_route("/", root)
