@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/github/asphalt-framework/asphalt-web/badge.svg?branch=master
   :target: https://coveralls.io/github/asphalt-framework/asphalt-web?branch=master
   :alt: Code Coverage
+.. image:: https://readthedocs.org/projects/asphalt-web/badge/?version=latest
+  :target: https://asphalt-web.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation
 
 This Asphalt framework component provides integrations for various web frameworks,
 enabling them to make use of Asphalt components.
