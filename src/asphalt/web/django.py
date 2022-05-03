@@ -35,5 +35,7 @@ class DjangoComponent(ASGIComponent[ASGIHandler]):
         :meth:`add_middleware`
     """
 
-    def wrap_in_middleware(self, app: ASGIHandler) -> ASGI3Application:
+    def setup_asphalt_middleware(self, app: ASGIHandler) -> ASGI3Application:
+        # In Django, the middleware must be explicitly added to MIDDLEWARE in
+        # settings.py
         return app

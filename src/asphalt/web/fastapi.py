@@ -79,7 +79,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
             middlewares=middlewares,
         )
 
-    def wrap_in_middleware(self, app: FastAPI) -> ASGI3Application:
+    def setup_asphalt_middleware(self, app: FastAPI) -> ASGI3Application:
         # Convert Asphalt dependencies into FastAPI dependencies
         for route in app.router.routes:
             if isinstance(route, (APIRoute, APIWebSocketRoute)):

@@ -65,5 +65,5 @@ class StarletteComponent(ASGIComponent[Starlette]):
             middlewares=middlewares,
         )
 
-    def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
+    def setup_asphalt_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)

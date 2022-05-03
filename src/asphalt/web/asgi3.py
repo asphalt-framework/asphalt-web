@@ -78,11 +78,11 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         self.host = host
         self.port = port
 
-        self.add_middleware(self.wrap_in_middleware)
+        self.add_middleware(self.setup_asphalt_middleware)
         for middleware in middlewares:
             self.add_middleware(middleware)
 
-    def wrap_in_middleware(self, app: T_Application) -> ASGI3Application:
+    def setup_asphalt_middleware(self, app: T_Application) -> ASGI3Application:
         return AsphaltMiddleware(app)
 
     def add_middleware(
