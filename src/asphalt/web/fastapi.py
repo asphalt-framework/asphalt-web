@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from inspect import Parameter, Signature, signature
-from typing import Any
+from inspect import Signature, signature
+from typing import Any, get_type_hints
 
 from asgiref.typing import ASGI3Application
 from asphalt.core import Context, require_resource
@@ -87,17 +87,20 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
         for route in self.original_app.router.routes:
             if isinstance(route, (APIRoute, APIWebSocketRoute)):
                 sig: Signature | None = None
+                type_hints: dict[str, Any]
                 for dependency in route.dependant.dependencies:
                     if isinstance(dependency.call, _AsphaltDependency):
                         if sig is None:
                             sig = signature(route.endpoint)
+                            type_hints = get_type_hints(route.endpoint)
 
-                        annotation = sig.parameters[dependency.name].annotation
-                        if annotation is Parameter.empty:
+                        try:
+                            annotation = type_hints[dependency.name]
+                        except KeyError:
                             raise TypeError(
                                 f"Dependency {dependency.name} in endpoint "
                                 f"{route.path} is missing a type annotation"
-                            )
+                            ) from None
 
                         dependency.call.cls = annotation
 
