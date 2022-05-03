@@ -6,7 +6,7 @@ from inspect import Parameter, Signature, signature
 from typing import Any
 
 from asgiref.typing import ASGI3Application
-from asphalt.core import require_resource
+from asphalt.core import Context, require_resource
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
@@ -80,8 +80,11 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
         )
 
     def setup_asphalt_middleware(self, app: FastAPI) -> ASGI3Application:
+        return AsphaltMiddleware(app)
+
+    async def start_server(self, ctx: Context) -> None:
         # Convert Asphalt dependencies into FastAPI dependencies
-        for route in app.router.routes:
+        for route in self.original_app.router.routes:
             if isinstance(route, (APIRoute, APIWebSocketRoute)):
                 sig: Signature | None = None
                 for dependency in route.dependant.dependencies:
@@ -98,4 +101,4 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
 
                         dependency.call.cls = annotation
 
-        return AsphaltMiddleware(app)
+        await super().start_server(ctx)

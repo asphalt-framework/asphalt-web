@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from asyncio import create_task, sleep
-from collections.abc import Callable, Sequence
+from collections.abc import AsyncIterator, Callable, Sequence
 from dataclasses import dataclass
 from inspect import isfunction
 from typing import Any, Generic, TypeVar
@@ -112,8 +112,17 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
                 f"middleware must be either a callable or a dict, not {middleware!r}"
             )
 
+    async def start(self, ctx: Context) -> None:
+        types = [ASGI3Application]
+        if not isfunction(self.original_app):
+            types.append(type(self.original_app))
+
+        ctx.add_resource(self.original_app, types=types)
+        await super().start(ctx)
+        await self.start_server(ctx)
+
     @context_teardown
-    async def start(self, ctx: Context):
+    async def start_server(self, ctx: Context) -> AsyncIterator[None]:
         config = Config(
             app=self.app,
             host=self.host,
@@ -122,14 +131,6 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
             log_config=None,
             lifespan="off",
         )
-
-        types = [ASGI3Application]
-        if not isfunction(self.original_app):
-            types.append(type(self.original_app))
-
-        ctx.add_resource(self.original_app, types=types)
-        await super().start(ctx)
-
         server = uvicorn.Server(config)
         server.install_signal_handlers = lambda: None
         server_task = create_task(server.serve())
