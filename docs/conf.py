@@ -37,7 +37,7 @@ htmlhelp_basename = project.replace("-", "") + "doc"
 
 extlinks = {
     "github": (
-        f"https://github.com/asphalt-framework/{project}/tree/{version}/%s",
+        f"https://github.com/asphalt-framework/{project}/tree/{release}/%s",
         None,
     )
 }
