@@ -100,7 +100,7 @@ in the project's ``settings.py`` file.
             .. include:: ../examples/django/config.yaml
                :code: yaml
 
-   .. tab:: aiohttp
+   .. tab:: AIOHTTP
 
       .. tabs::
 
@@ -140,8 +140,8 @@ Adding middleware
 -----------------
 
 All applications will be automatically wrapped by the Asphalt middleware, but you can
-add your own middleware on top of that. All frameworks supported here (except aiohttp)
-can be wrapped with ASGI 3.0 middleware, while aiohttp will need its own specific kind
+add your own middleware on top of that. All frameworks supported here (except AIOHTTP)
+can be wrapped with ASGI 3.0 middleware, while AIOHTTP will need its own specific kind
 of middleware.
 
 .. note:: The application resource available on the global context is the unwrapped
