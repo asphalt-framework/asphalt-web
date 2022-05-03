@@ -8,7 +8,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
-    "sphinxcontrib.asyncio",
     "sphinx_tabs.tabs",
 ]
 
