@@ -92,6 +92,8 @@ Resources available to websocket handlers:
   * type: `asgiref.typing.WebSocketScope`_
   * name: ``default``
 
+.. _FastAPI:
+
 FastAPI
 -------
 

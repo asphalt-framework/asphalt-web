@@ -134,12 +134,7 @@ Injecting resources to handler functions
 In most cases, dependency injection works the same with request handler functions: you
 decorate the function with ``@inject`` and add one or more type annotated arguments with
 ``resource()`` as the default. One framework – FastAPI – requires special measures,
-however. This is due to FastAPI having its own dependency injection scheme which clashes
-with Asphalt's. To make the two frameworks play well together, one needs to use
-:func:`~asphalt.web.fastapi.AsphaltDepends` instead of
-:func:`~fastapi.param_functions.Depends` for injecting Asphalt resources. Beyond that,
-things should work the same. And of course you can have both FastAPI and Asphalt
-dependencies in the same handler function.
+however. See the :ref:`FastAPI section <FastAPI>` for details.
 
 Adding middleware
 -----------------
