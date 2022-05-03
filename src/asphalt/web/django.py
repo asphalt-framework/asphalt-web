@@ -31,6 +31,8 @@ class DjangoComponent(ASGIComponent[ASGIHandler]):
     :param django.core.handlers.asgi.ASGIHandler app: the Django ASGI handler object
     :param host: the IP address to bind to
     :param port: the port to bind to
+    :param middlewares: list of callables or dicts to be added as middleware using
+        :meth:`add_middleware`
     """
 
     def wrap_in_middleware(self, app: ASGIHandler) -> ASGI3Application:

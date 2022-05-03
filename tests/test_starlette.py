@@ -6,6 +6,7 @@ from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
 from asphalt.core import Component, Context, inject, require_resource, resource
 from httpx import AsyncClient
 from starlette.applications import Starlette
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.websockets import WebSocket
@@ -28,6 +29,9 @@ async def root(
             "another resource": another_resource,
         }
     )
+
+
+TrustedHostMiddleware
 
 
 @inject

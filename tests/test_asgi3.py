@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import json
-from typing import cast
+from collections.abc import Callable, Sequence
+from typing import Any, cast
 from urllib.parse import parse_qs
 
 import pytest
@@ -8,7 +11,9 @@ from asgiref.typing import (
     ASGI3Application,
     ASGIReceiveCallable,
     ASGISendCallable,
+    ASGISendEvent,
     HTTPScope,
+    Scope,
     WebSocketScope,
 )
 from asphalt.core import Context, current_context, inject, resource
@@ -74,6 +79,24 @@ async def application(
         )
 
 
+class TextReplacerMiddleware:
+    def __init__(self, app: ASGI3Application, text: str, replacement: str):
+        self.app = app
+        self.text = text.encode()
+        self.replacement = replacement.encode()
+
+    async def __call__(
+        self, scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
+    ) -> None:
+        async def wrapped_send(event: ASGISendEvent) -> None:
+            if event["type"] == "http.response.body":
+                event["body"] = event["body"].replace(self.text, self.replacement)
+
+            await send(event)
+
+        await self.app(scope, receive, wrapped_send)
+
+
 @pytest.mark.asyncio
 async def test_asgi_http(unused_tcp_port: int):
     async with Context() as ctx, AsyncClient() as http:
@@ -115,3 +138,40 @@ async def test_asgi_ws(unused_tcp_port: int):
                 "my resource": "foo",
                 "another resource": "bar",
             }
+
+
+@pytest.mark.parametrize("method", ["direct", "dict"])
+@pytest.mark.asyncio
+async def test_asgi_middleware(unused_tcp_port: int, method: str):
+    middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
+    if method == "direct":
+        middlewares = [lambda app: TextReplacerMiddleware(app, "World", "Middleware")]
+    else:
+        middlewares = [
+            {
+                "type": f"{__name__}:TextReplacerMiddleware",
+                "text": "World",
+                "replacement": "Middleware",
+            }
+        ]
+
+    async with Context() as ctx, AsyncClient() as http:
+        ctx.add_resource("foo")
+        ctx.add_resource("bar", name="another")
+        await ASGIComponent(
+            app=application, port=unused_tcp_port, middlewares=middlewares
+        ).start(ctx)
+
+        # Ensure that the application got added as a resource
+        ctx.require_resource(ASGI3Application)
+
+        # Ensure that the application responds correctly to an HTTP request
+        response = await http.get(
+            f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
+        )
+        response.raise_for_status()
+        assert response.json() == {
+            "message": "Hello Middleware",
+            "my resource": "foo",
+            "another resource": "bar",
+        }

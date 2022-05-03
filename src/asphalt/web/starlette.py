@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
@@ -41,6 +42,8 @@ class StarletteComponent(ASGIComponent[Starlette]):
         (default: the value of
         `__debug__ <https://docs.python.org/3/library/constants.html#debug__>`_;
         ignored if an application object is explicitly passed in)
+    :param middlewares: list of callables or dicts to be added as middleware using
+        :meth:`add_middleware`
     """
 
     def __init__(
@@ -51,10 +54,15 @@ class StarletteComponent(ASGIComponent[Starlette]):
         host: str = "127.0.0.1",
         port: int = 8000,
         debug: bool | None = None,
+        middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]] = (),
     ) -> None:
         debug = debug if isinstance(debug, bool) else __debug__
         super().__init__(
-            components, app=app or Starlette(debug=debug), host=host, port=port
+            components,
+            app=app or Starlette(debug=debug),
+            host=host,
+            port=port,
+            middlewares=middlewares,
         )
 
     def wrap_in_middleware(self, app: Starlette) -> ASGI3Application:
