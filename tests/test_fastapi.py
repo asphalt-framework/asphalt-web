@@ -127,6 +127,23 @@ async def test_ws(unused_tcp_port: int, method: str):
             }
 
 
+@pytest.mark.asyncio
+async def test_missing_type_annotation():
+    async def bad_root(request: Request, bad_resource=AsphaltDepends()) -> Response:
+        return Response("never seen")
+
+    application = FastAPI()
+    application.add_api_route("/", bad_root)
+
+    async with Context() as ctx:
+        component = FastAPIComponent(app=application)
+        with pytest.raises(
+            TypeError,
+            match="Dependency 'bad_resource' in endpoint / is missing a type annotation",
+        ):
+            await component.start(ctx)
+
+
 @pytest.mark.parametrize("method", ["direct", "dict"])
 @pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str):
@@ -158,3 +175,16 @@ async def test_middleware(unused_tcp_port: int, method: str):
         )
         response.raise_for_status()
         assert response.text == "Hello Middleware"
+
+
+def test_bad_middleware_type():
+    with pytest.raises(
+        TypeError,
+        match="middleware must be either a callable or a dict, not 'foo'",
+    ):
+        FastAPIComponent(middlewares=["foo"])
+
+
+def test_bad_middleware_dict():
+    with pytest.raises(TypeError, match=r"Middleware \(1\) is not callable"):
+        FastAPIComponent(middlewares=[{"type": 1}])

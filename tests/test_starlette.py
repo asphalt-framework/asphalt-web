@@ -162,3 +162,16 @@ async def test_middleware(unused_tcp_port: int, method: str):
         )
         response.raise_for_status()
         assert response.text == "Hello Middleware"
+
+
+def test_bad_middleware_type():
+    with pytest.raises(
+        TypeError,
+        match="middleware must be either a callable or a dict, not 'foo'",
+    ):
+        StarletteComponent(middlewares=["foo"])
+
+
+def test_bad_middleware_dict():
+    with pytest.raises(TypeError, match=r"Middleware \(1\) is not callable"):
+        StarletteComponent(middlewares=[{"type": 1}])

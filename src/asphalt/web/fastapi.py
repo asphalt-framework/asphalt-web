@@ -105,8 +105,12 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
                 raise TypeError(f"Middleware ({type_}) is not callable")
 
             self.app.add_middleware(type_, **middleware)
-        else:
+        elif callable(middleware):
             self.app.add_middleware(middleware)
+        else:
+            raise TypeError(
+                f"middleware must be either a callable or a dict, not {middleware!r}"
+            )
 
     async def start_server(self, ctx: Context) -> None:
         # Convert Asphalt dependencies into FastAPI dependencies
@@ -124,7 +128,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
                             annotation = type_hints[dependency.name]
                         except KeyError:
                             raise TypeError(
-                                f"Dependency {dependency.name} in endpoint "
+                                f"Dependency {dependency.name!r} in endpoint "
                                 f"{route.path} is missing a type annotation"
                             ) from None
 

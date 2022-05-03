@@ -91,5 +91,9 @@ class StarletteComponent(ASGIComponent[Starlette]):
                 raise TypeError(f"Middleware ({type_}) is not callable")
 
             self.app.add_middleware(type_, **middleware)
-        else:
+        elif callable(middleware):
             self.app.add_middleware(middleware)
+        else:
+            raise TypeError(
+                f"middleware must be either a callable or a dict, not {middleware!r}"
+            )

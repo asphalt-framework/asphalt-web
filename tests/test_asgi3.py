@@ -192,3 +192,16 @@ async def test_middleware(unused_tcp_port: int, method: str):
             "my resource": "foo",
             "another resource": "bar",
         }
+
+
+def test_bad_middleware_type():
+    with pytest.raises(
+        TypeError,
+        match="middleware must be either a callable or a dict, not 'foo'",
+    ):
+        ASGIComponent(app=application, middlewares=["foo"])
+
+
+def test_bad_middleware_dict():
+    with pytest.raises(TypeError, match=r"Middleware \(1\) is not callable"):
+        ASGIComponent(app=application, middlewares=[{"type": 1}])

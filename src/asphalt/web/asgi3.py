@@ -102,7 +102,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         if isinstance(middleware, dict):
             type_ = resolve_reference(middleware.pop("type", None))
             if not callable(type_):
-                raise TypeError(f"Middleware ({type_}) is not callable")
+                raise TypeError(f"Middleware ({type_!r}) is not callable")
 
             self.app = type_(self.app, **middleware)
         elif callable(middleware):
