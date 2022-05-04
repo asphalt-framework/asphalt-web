@@ -89,10 +89,22 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
                 f"{middleware!r}"
             )
 
-    @context_teardown
-    async def start(self, ctx: Context) -> AsyncIterator[None]:
+    async def start(self, ctx: Context) -> None:
         ctx.add_resource(self.app)
         await super().start(ctx)
+        await self.start_server(ctx)
+
+    @context_teardown
+    async def start_server(self, ctx: Context) -> AsyncIterator[None]:
+        """
+        Start the HTTP server.
+
+        This method is called by the component after the subcomponents have been
+        started. If you need to add any middleware that requires resources provided by
+        subcomponents, you can override this method and call the superclass
+        implementation after the middleware has been added.
+
+        """
         runner = AppRunner(self.app)
         await runner.setup()
         site = TCPSite(runner, host=self.host, port=self.port)

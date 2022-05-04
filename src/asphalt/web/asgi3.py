@@ -123,6 +123,15 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
 
     @context_teardown
     async def start_server(self, ctx: Context) -> AsyncIterator[None]:
+        """
+        Start the HTTP server.
+
+        This method is called by the component after the subcomponents have been
+        started. If you need to add any middleware that requires resources provided by
+        subcomponents, you can override this method and call the superclass
+        implementation after the middleware has been added.
+
+        """
         config = Config(
             app=self.app,
             host=self.host,
