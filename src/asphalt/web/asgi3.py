@@ -65,7 +65,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] = None,
+        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: T_Application | str,
         host: str = "127.0.0.1",

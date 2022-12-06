@@ -48,7 +48,7 @@ class StarletteComponent(ASGIComponent[Starlette]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] = None,
+        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: Starlette | None = None,
         host: str = "127.0.0.1",

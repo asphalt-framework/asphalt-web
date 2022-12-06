@@ -39,7 +39,7 @@ class AIOHTTPComponent(ContainerComponent):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] = None,
+        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: Application | str | None = None,
         host: str = "127.0.0.1",
