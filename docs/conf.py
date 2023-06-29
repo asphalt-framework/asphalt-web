@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from importlib.metadata import version
+from importlib import metadata
 
 from packaging.version import parse
 
@@ -18,11 +18,11 @@ project = "asphalt-web"
 author = "Alex Grönholm"
 copyright = "2022, " + author
 
-v = parse(version(project))
+v = parse(metadata.version(project))
 version = v.base_version
 release = v.public
 
-language = None
+language = "en"
 
 exclude_patterns = ["_build"]
 pygments_style = "sphinx"
@@ -32,7 +32,6 @@ autodoc_inherit_docstrings = False
 autodoc_default_options = {"show-inheritance": True}
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
 htmlhelp_basename = project.replace("-", "") + "doc"
 
 extlinks = {
