@@ -99,6 +99,7 @@ async def test_ws(unused_tcp_port: int, method: str):
                 "another resource": another_resource,
             }
         )
+        return ws
 
     application = Application()
     if method == "static":
