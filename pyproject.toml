@@ -65,7 +65,8 @@ test = [
     "httpx",
     "websockets",
     "aiohttp >= 3.8; python_version < '3.12'",
-    "asphalt-web[asgi3,starlette,django,fastapi]",
+    "Django >= 3.2; python_implementation == 'CPython'",
+    "asphalt-web[asgi3,starlette,fastapi]",
 ]
 doc = [
     "Sphinx >= 6.0",
