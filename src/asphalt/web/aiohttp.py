@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Awaitable, Callable, Coroutine, Sequence
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Sequence
 from inspect import iscoroutinefunction
 from typing import Any
 
@@ -95,7 +95,9 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
         await self.start_server(ctx)
 
     @context_teardown
-    async def start_server(self, ctx: Context) -> AsyncIterator[None]:
+    async def start_server(
+        self, ctx: Context
+    ) -> AsyncGenerator[None, Exception | None]:
         """
         Start the HTTP server.
 

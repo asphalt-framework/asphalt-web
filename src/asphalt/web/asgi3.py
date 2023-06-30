@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from asyncio import create_task, sleep
-from collections.abc import AsyncIterator, Callable, Sequence
+from collections.abc import AsyncGenerator, Callable, Sequence
 from dataclasses import dataclass
 from inspect import isfunction
 from typing import Any, Generic, TypeVar
@@ -122,7 +122,9 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         await self.start_server(ctx)
 
     @context_teardown
-    async def start_server(self, ctx: Context) -> AsyncIterator[None]:
+    async def start_server(
+        self, ctx: Context
+    ) -> AsyncGenerator[None, Exception | None]:
         """
         Start the HTTP server.
 
