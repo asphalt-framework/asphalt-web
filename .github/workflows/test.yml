@@ -22,8 +22,6 @@ jobs:
         allow-prereleases: true
         cache: pip
         cache-dependency-path: pyproject.toml
-    - name: Start external services
-      run: docker-compose up -d
     - name: Install dependencies
       run: pip install .[test] coverage
     - name: Test with pytest
