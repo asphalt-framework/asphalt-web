@@ -3,6 +3,11 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
+**1.2.1**
+
+- Fixed unintentional change where the asgiref dependency was dropped from the
+  ``fastapi``, ``django`` and ``starlette`` extras
+
 **1.2.0**
 
 - Dropped Python 3.7 support

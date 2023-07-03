@@ -48,14 +48,17 @@ asgi3 = [
     "uvicorn >= 0.17.6",
 ]
 django = [
+    "asgiref ~= 3.5",
     "Django >= 3.2",
     "uvicorn >= 0.17.6",
 ]
 fastapi = [
+    "asgiref ~= 3.5",
     "fastapi >= 0.75",
     "uvicorn >= 0.17.6",
 ]
 starlette = [
+    "asgiref ~= 3.5",
     "starlette >= 0.17",
     "uvicorn >= 0.17.6",
 ]
