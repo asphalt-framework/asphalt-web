@@ -56,7 +56,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
     A component that serves the given ASGI 3.0 application via Uvicorn.
 
     :param app: the ASGI application to serve, or a module:varname reference to one
-    :type app: asgiref.typing.ASGI3Application | None
+    :type app: asgiref.typing.ASGI3Application | str
     :param host: the IP address to bind to
     :param port: the port to bind to
     :param middlewares: list of callables or dicts to be added as middleware using
