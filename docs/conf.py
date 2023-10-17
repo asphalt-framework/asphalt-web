@@ -34,9 +34,10 @@ autodoc_default_options = {"show-inheritance": True}
 html_theme = "sphinx_rtd_theme"
 htmlhelp_basename = project.replace("-", "") + "doc"
 
+branch_or_release = release if ".post" not in release else "master"
 extlinks = {
     "github": (
-        f"https://github.com/asphalt-framework/{project}/tree/{release}/%s",
+        f"https://github.com/asphalt-framework/{project}/tree/{branch_or_release}/%s",
         None,
     )
 }
