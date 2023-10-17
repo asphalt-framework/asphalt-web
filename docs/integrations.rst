@@ -135,6 +135,67 @@ Resources available to websocket handlers:
   * type: `asgiref.typing.WebSocketScope`_
   * name: ``default``
 
+Litestar
+--------
+
+Component: ``litestar`` (:class:`~.litestar.LitestarComponent`)
+
+Example: :github:`examples/litestar`
+
+This integration is based on the ASGI 3.0 integration.
+
+Litestar has its own dependency injection system which can optionally be used to inject
+Asphalt resources in web endpoints. This can be done by using
+:class:`~asphalt.web.litestar.AsphaltProvide` instead of :class:`~litestar.di.Provide`::
+
+    from litestar import get
+    from asphalt.web.litestar import AsphaltProvide
+
+    @get("/endpointname", dependencies={"myresource": AsphaltProvide(SomeConnection)})
+    async def myendpoint(myresource: SomeConnection) -> None:
+        ...
+
+This would be roughly equivalent to::
+
+    from litestar import get
+    from asphalt.core import require_resource
+
+    @get("/endpointname")
+    async def myendpoint() -> None:
+        myresource = require_resource(SomeConnection)
+        ...
+
+Resources available on the global context:
+
+* the application object
+
+  * type: `asgiref.typing.ASGI3Application`_ or `litestar.Litestar`_
+  * name: ``default``
+
+Resources available to HTTP request handlers:
+
+* the ASGI scope of the request
+
+  * type: `asgiref.typing.HTTPScope`_
+  * name: ``default``
+
+* the request object
+
+  * type: `litestar.Request`_
+  * name: ``default``
+
+  .. note::
+    The request resource is created from the ASGI scope object by the Asphalt
+    middleware, and does **NOT** share state with any request object provided by the
+    Litestar framework
+
+Resources available to websocket handlers:
+
+* the ASGI scope of the request
+
+  * type: `asgiref.typing.WebSocketScope`_
+  * name: ``default``
+
 AIOHTTP
 -------
 
@@ -166,5 +227,7 @@ Resources available to request handlers:
 .. _starlette.requests.Request: https://www.starlette.io/requests/
 .. _starlette.applications.Starlette: https://www.starlette.io/applications/
 .. _fastapi.FastAPI: https://fastapi.tiangolo.com/tutorial/first-steps/
+.. _litestar.Request: https://docs.litestar.dev/latest/usage/requests.html
+.. _litestar.Litestar: https://docs.litestar.dev/latest/usage/applications.html
 .. _aiohttp.web_app.Application: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.Application
 .. _aiohttp.web_request.Request: https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.Request
