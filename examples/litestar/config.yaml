@@ -1,0 +1,12 @@
+services:
+  static:
+    component:
+      type: litestar
+      route_handlers: ["static:root"]
+
+  dynamic:
+    component:
+      type: litestar
+      components:
+        myroot:
+          type: dynamic:WebRootComponent

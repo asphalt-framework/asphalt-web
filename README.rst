@@ -17,6 +17,7 @@ The following web frameworks are catered for:
 * AIOHTTP_
 * Django_
 * FastAPI_
+* Litestar_
 * Starlette_
 
 WSGI is not supported because Asphalt focuses on asynchronous operation and WSGI is a
@@ -26,6 +27,7 @@ synchronous web application gateway standard.
 .. _AIOHTTP: https://docs.aiohttp.org/
 .. _Django: https://www.djangoproject.com/
 .. _FastAPI: https://fastapi.tiangolo.com/
+.. _Litestar: https://litestar.dev/
 .. _Starlette: https://www.starlette.io/
 
 Project links

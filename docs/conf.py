@@ -44,4 +44,5 @@ extlinks = {
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "asphalt": ("https://asphalt.readthedocs.io/en/latest/", None),
+    "litestar": ("https://docs.litestar.dev/latest/", None),
 }
