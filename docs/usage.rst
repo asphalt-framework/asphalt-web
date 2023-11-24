@@ -86,6 +86,25 @@ in the project's ``settings.py`` file.
             .. include:: ../examples/starlette/config.yaml
                :code: yaml
 
+   .. tab:: Litestar
+
+      .. tabs::
+
+         .. tab:: static.py
+
+            .. include:: ../examples/litestar/static.py
+               :code: python3
+
+         .. tab:: dynamic.py
+
+            .. include:: ../examples/litestar/dynamic.py
+               :code: python3
+
+         .. tab:: config.yaml
+
+            .. include:: ../examples/litestar/config.yaml
+               :code: yaml
+
    .. tab:: Django
 
       .. tabs::
