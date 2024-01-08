@@ -3,6 +3,11 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
+**UNRELEASED**
+
+- Fixed Starlette/FastAPI request resource being added under the wrong type since
+  Starlette v0.28.0
+
 **1.3.0**
 
 - Dropped Python 3.7 support

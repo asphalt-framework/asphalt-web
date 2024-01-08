@@ -25,7 +25,7 @@ class AsphaltMiddleware(BaseHTTPMiddleware):
             await super().__call__(scope, receive, send)
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
-        current_context().add_resource(request)
+        current_context().add_resource(request, types=[Request])
         return await call_next(request)
 
 
