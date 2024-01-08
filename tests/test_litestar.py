@@ -169,9 +169,7 @@ async def test_dependency_injection(unused_tcp_port: int) -> None:
             "another_resource": AsphaltProvide(str, "another"),
         },
     )
-    async def root(
-        request: Request, my_resource: str, another_resource: str
-    ) -> Dict[str, Any]:  # noqa: UP006
+    async def root(request: Request, my_resource: str, another_resource: str) -> Dict[str, Any]:  # noqa: UP006
         my_resource = require_resource(str)
         another_resource = require_resource(str, "another")
         require_resource(HTTPScope)

@@ -24,9 +24,7 @@ class AsphaltMiddleware(BaseHTTPMiddleware):
 
             await super().__call__(scope, receive, send)
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         current_context().add_resource(request)
         return await call_next(request)
 
@@ -68,9 +66,7 @@ class StarletteComponent(ASGIComponent[Starlette]):
     def setup_asphalt_middleware(self, app: Starlette) -> ASGI3Application:
         return AsphaltMiddleware(app)
 
-    def add_middleware(
-        self, middleware: Callable[..., ASGI3Application] | dict[str, Any]
-    ) -> None:
+    def add_middleware(self, middleware: Callable[..., ASGI3Application] | dict[str, Any]) -> None:
         """
         Add a middleware to the application.
 
@@ -94,6 +90,4 @@ class StarletteComponent(ASGIComponent[Starlette]):
         elif callable(middleware):
             self.app.add_middleware(middleware)
         else:
-            raise TypeError(
-                f"middleware must be either a callable or a dict, not {middleware!r}"
-            )
+            raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")

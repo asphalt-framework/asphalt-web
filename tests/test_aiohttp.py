@@ -62,9 +62,9 @@ async def test_http(unused_tcp_port: int, method: str):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        await AIOHTTPComponent(components=components, app=application, port=unused_tcp_port).start(
+            ctx
+        )
 
         # Ensure that the application got added as a resource
         ctx.require_resource(Application)
@@ -117,9 +117,9 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context() as ctx:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        await AIOHTTPComponent(components=components, app=application, port=unused_tcp_port).start(
+            ctx
+        )
 
         # Ensure that the application got added as a resource
         ctx.require_resource(Application)

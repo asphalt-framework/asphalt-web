@@ -175,9 +175,9 @@ async def test_middleware(unused_tcp_port: int, method: str):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await ASGIComponent(
-            app=application, port=unused_tcp_port, middlewares=middlewares
-        ).start(ctx)
+        await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start(
+            ctx
+        )
 
         # Ensure that the application got added as a resource
         ctx.require_resource(ASGI3Application)

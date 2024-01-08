@@ -85,9 +85,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
     def setup_asphalt_middleware(self, app: T_Application) -> ASGI3Application:
         return AsphaltMiddleware(app)
 
-    def add_middleware(
-        self, middleware: Callable[..., ASGI3Application] | dict[str, Any]
-    ) -> None:
+    def add_middleware(self, middleware: Callable[..., ASGI3Application] | dict[str, Any]) -> None:
         """
         Add middleware to the application.
 
@@ -108,9 +106,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         elif callable(middleware):
             self.app = middleware(self.app)
         else:
-            raise TypeError(
-                f"middleware must be either a callable or a dict, not {middleware!r}"
-            )
+            raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
 
     async def start(self, ctx: Context) -> None:
         types = [ASGI3Application]
@@ -122,9 +118,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         await self.start_server(ctx)
 
     @context_teardown
-    async def start_server(
-        self, ctx: Context
-    ) -> AsyncGenerator[None, Exception | None]:
+    async def start_server(self, ctx: Context) -> AsyncGenerator[None, Exception | None]:
         """
         Start the HTTP server.
 

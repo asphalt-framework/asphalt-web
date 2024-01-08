@@ -53,9 +53,9 @@ async def test_http(unused_tcp_port: int, method: str):
     async with Context() as ctx, AsyncClient() as http:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await FastAPIComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
+            ctx
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = ctx.require_resource(ASGI3Application)
@@ -108,9 +108,9 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context() as ctx:
         ctx.add_resource("foo")
         ctx.add_resource("bar", name="another")
-        await FastAPIComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
+            ctx
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = ctx.require_resource(ASGI3Application)

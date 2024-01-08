@@ -82,9 +82,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
     def setup_asphalt_middleware(self, app: FastAPI) -> ASGI3Application:
         return AsphaltMiddleware(app)
 
-    def add_middleware(
-        self, middleware: Callable[..., ASGI3Application] | dict[str, Any]
-    ) -> None:
+    def add_middleware(self, middleware: Callable[..., ASGI3Application] | dict[str, Any]) -> None:
         """
         Add a middleware to the application.
 
@@ -108,9 +106,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
         elif callable(middleware):
             self.app.add_middleware(middleware)
         else:
-            raise TypeError(
-                f"middleware must be either a callable or a dict, not {middleware!r}"
-            )
+            raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
 
     async def start_server(self, ctx: Context) -> None:
         # Convert Asphalt dependencies into FastAPI dependencies

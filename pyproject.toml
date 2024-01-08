@@ -104,6 +104,8 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 99
+
+[tool.ruff.lint]
 select = [
     "E", "F", "W",  # default flake-8
     "I",            # isort

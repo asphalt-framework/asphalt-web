@@ -18,9 +18,7 @@ from asphalt.core import (
 
 
 @middleware
-async def asphalt_middleware(
-    request: Request, handler: Callable[..., Awaitable]
-) -> Response:
+async def asphalt_middleware(request: Request, handler: Callable[..., Awaitable]) -> Response:
     async with Context() as ctx:
         ctx.add_resource(request, types=[Request])
         return await handler(request)
@@ -44,9 +42,7 @@ class AIOHTTPComponent(ContainerComponent):
         app: Application | str | None = None,
         host: str = "127.0.0.1",
         port: int = 8000,
-        middlewares: Sequence[
-            Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]
-        ] = (),
+        middlewares: Sequence[Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]] = (),
     ) -> None:
         super().__init__(components)
 
@@ -85,8 +81,7 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
             self.app.middlewares.append(middleware)
         else:
             raise TypeError(
-                f"middleware must be either a coroutine function or a dict, not "
-                f"{middleware!r}"
+                f"middleware must be either a coroutine function or a dict, not " f"{middleware!r}"
             )
 
     async def start(self, ctx: Context) -> None:
@@ -95,9 +90,7 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
         await self.start_server(ctx)
 
     @context_teardown
-    async def start_server(
-        self, ctx: Context
-    ) -> AsyncGenerator[None, Exception | None]:
+    async def start_server(self, ctx: Context) -> AsyncGenerator[None, Exception | None]:
         """
         Start the HTTP server.
 
