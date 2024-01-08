@@ -81,7 +81,7 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
             self.app.middlewares.append(middleware)
         else:
             raise TypeError(
-                f"middleware must be either a coroutine function or a dict, not " f"{middleware!r}"
+                f"middleware must be either a coroutine function or a dict, not {middleware!r}"
             )
 
     async def start(self, ctx: Context) -> None:
