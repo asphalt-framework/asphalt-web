@@ -3,7 +3,7 @@ Version history
 
 This library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.
 
-**UNRELEASED**
+**1.3.1**
 
 - Fixed Starlette/FastAPI request resource being added under the wrong type since
   Starlette v0.28.0
