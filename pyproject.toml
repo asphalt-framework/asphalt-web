@@ -68,7 +68,8 @@ starlette = [
     "uvicorn >= 0.17.6",
 ]
 test = [
-    "pytest",
+    "coverage >= 7",
+    "pytest >= 7.4",
     "pytest-asyncio",
     "httpx",
     "websockets",
