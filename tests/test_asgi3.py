@@ -21,6 +21,8 @@ from httpx import AsyncClient
 
 from asphalt.web.asgi3 import ASGIComponent
 
+pytestmark = pytest.mark.anyio
+
 
 @inject
 async def application(
@@ -114,11 +116,10 @@ class TextReplacerMiddleware:
         await self.app(scope, receive, wrapped_send)
 
 
-@pytest.mark.asyncio
 async def test_http(unused_tcp_port: int):
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
 
         # Ensure that the application got added as a resource
@@ -136,11 +137,10 @@ async def test_http(unused_tcp_port: int):
         }
 
 
-@pytest.mark.asyncio
 async def test_ws(unused_tcp_port: int):
     async with Context() as ctx:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
 
         # Ensure that the application got added as a resource
@@ -158,7 +158,6 @@ async def test_ws(unused_tcp_port: int):
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
-@pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str):
     middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
     if method == "direct":
@@ -173,8 +172,8 @@ async def test_middleware(unused_tcp_port: int, method: str):
         ]
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start(
             ctx
         )

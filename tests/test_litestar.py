@@ -19,6 +19,8 @@ try:
 except ModuleNotFoundError:
     pytestmark = pytest.mark.skip("litestar not available")
     skip = True
+else:
+    pytestmark = pytest.mark.anyio
 
 from .test_asgi3 import TextReplacerMiddleware
 
@@ -49,7 +51,6 @@ if not skip:
 
 
 @pytest.mark.parametrize("method", ["static", "static-ref", "dynamic"])
-@pytest.mark.asyncio
 async def test_http(unused_tcp_port: int, method: str) -> None:
     route_handlers = []
     components = {}
@@ -67,8 +68,8 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
         components["myroutes"] = {"type": RouteComponent}
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await LitestarComponent(
             components=components, port=unused_tcp_port, route_handlers=route_handlers
         ).start(ctx)
@@ -90,7 +91,6 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_ws(unused_tcp_port: int, method: str) -> None:
     route_handlers = []
     components = {}
@@ -106,8 +106,8 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await LitestarComponent(
             components=components, port=unused_tcp_port, route_handlers=route_handlers
         ).start(ctx)
@@ -128,7 +128,6 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
-@pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str) -> None:
     middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
     if method == "direct":
@@ -159,7 +158,6 @@ async def test_middleware(unused_tcp_port: int, method: str) -> None:
         assert response.text == "Hello Middleware"
 
 
-@pytest.mark.asyncio
 async def test_dependency_injection(unused_tcp_port: int) -> None:
     @get(
         "/",
@@ -181,8 +179,8 @@ async def test_dependency_injection(unused_tcp_port: int) -> None:
         }
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await LitestarComponent(port=unused_tcp_port, route_handlers=[root]).start(ctx)
 
         response = await http.get(

@@ -18,9 +18,10 @@ from asphalt.web.fastapi import AsphaltDepends, FastAPIComponent
 
 from .test_asgi3 import TextReplacerMiddleware
 
+pytestmark = pytest.mark.anyio
+
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_http(unused_tcp_port: int, method: str):
     async def root(
         request: Request,
@@ -51,8 +52,8 @@ async def test_http(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
             ctx
         )
@@ -74,7 +75,6 @@ async def test_http(unused_tcp_port: int, method: str):
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_ws(unused_tcp_port: int, method: str):
     async def ws_root(
         websocket: WebSocket,
@@ -106,8 +106,8 @@ async def test_ws(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
             ctx
         )
@@ -127,7 +127,6 @@ async def test_ws(unused_tcp_port: int, method: str):
             }
 
 
-@pytest.mark.asyncio
 async def test_missing_type_annotation():
     async def bad_root(request: Request, bad_resource=AsphaltDepends()) -> Response:
         return Response("never seen")
@@ -145,7 +144,6 @@ async def test_missing_type_annotation():
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
-@pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str):
     middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
     if method == "direct":

@@ -18,9 +18,10 @@ from asphalt.web.starlette import StarletteComponent
 
 from .test_asgi3 import TextReplacerMiddleware
 
+pytestmark = pytest.mark.anyio
+
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_http(unused_tcp_port: int, method: str):
     @inject
     async def root(
@@ -53,8 +54,8 @@ async def test_http(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await StarletteComponent(
             components=components, app=application, port=unused_tcp_port
         ).start(ctx)
@@ -76,7 +77,6 @@ async def test_http(unused_tcp_port: int, method: str):
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_ws(unused_tcp_port: int, method: str):
     @inject
     async def ws_root(
@@ -110,8 +110,8 @@ async def test_ws(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await StarletteComponent(
             components=components, app=application, port=unused_tcp_port
         ).start(ctx)
@@ -132,7 +132,6 @@ async def test_ws(unused_tcp_port: int, method: str):
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
-@pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str):
     middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]]
     if method == "direct":

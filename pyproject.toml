@@ -17,7 +17,7 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Environment :: Web Environment",
-    "Framework :: AsyncIO",
+    "Framework :: AnyIO",
     "Typing :: Typed",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
@@ -45,38 +45,38 @@ aiohttp = [
 ]
 asgi3 = [
     "asgiref ~= 3.5",
-    "uvicorn >= 0.17.6",
+    "hypercorn >= 0.16.0",
 ]
 django = [
     "asgiref ~= 3.5",
     "Django >= 3.2",
-    "uvicorn >= 0.17.6",
+    "hypercorn >= 0.16.0",
 ]
 fastapi = [
     "asgiref ~= 3.5",
     "fastapi >= 0.75",
-    "uvicorn >= 0.17.6",
+    "hypercorn >= 0.16.0",
 ]
 litestar = [
     "asgiref ~= 3.5",
-    "litestar >= 2.2",
-    "uvicorn >= 0.17.6",
+    "litestar >= 2.5.5",
+    "hypercorn >= 0.16.0",
 ]
 starlette = [
     "asgiref ~= 3.5",
     "starlette >= 0.17",
-    "uvicorn >= 0.17.6",
+    "hypercorn >= 0.16.0",
 ]
 test = [
+    "anyio[trio] >= 4.2",
     "coverage >= 7",
     "pytest >= 7.4",
-    "pytest-asyncio",
     "httpx",
     "websockets",
     "aiohttp >= 3.8; python_version < '3.12'",
     "Django >= 3.2; python_implementation == 'CPython'",
     "asphalt-web[asgi3,fastapi,starlette]",
-    "litestar >= 2.2; python_implementation == 'CPython'",
+    "litestar >= 2.5.5; python_implementation == 'CPython'",
 ]
 doc = [
     "Sphinx >= 7.0",
@@ -100,7 +100,6 @@ local_scheme = "dirty-tag"
 
 [tool.pytest.ini_options]
 addopts = "-rsx --tb=short"
-asyncio_mode = "strict"
 testpaths = ["tests"]
 
 [tool.ruff]

@@ -6,7 +6,7 @@ from inspect import Signature, signature
 from typing import Any, get_type_hints
 
 from asgiref.typing import ASGI3Application
-from asphalt.core import Context, require_resource, resolve_reference
+from asphalt.core import require_resource, resolve_reference
 from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute, APIWebSocketRoute
 
@@ -108,7 +108,7 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
         else:
             raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
 
-    async def start_server(self, ctx: Context) -> None:
+    async def start_server(self) -> None:
         # Convert Asphalt dependencies into FastAPI dependencies
         for route in self.original_app.router.routes:
             if isinstance(route, (APIRoute, APIWebSocketRoute)):
@@ -130,4 +130,4 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
 
                         dependency.call.cls = annotation
 
-        await super().start_server(ctx)
+        await super().start_server()

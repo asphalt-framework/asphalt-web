@@ -17,6 +17,8 @@ try:
     from asphalt.web.aiohttp import AIOHTTPComponent
 except ModuleNotFoundError:
     pytestmark = pytest.mark.skip("aiohttp not available")
+else:
+    pytestmark = pytest.mark.anyio
 
 
 def setup_text_replacer(app, *, text: str, replacement: str) -> None:
@@ -30,7 +32,6 @@ def setup_text_replacer(app, *, text: str, replacement: str) -> None:
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_http(unused_tcp_port: int, method: str):
     @inject
     async def root(
@@ -60,8 +61,8 @@ async def test_http(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await AIOHTTPComponent(components=components, app=application, port=unused_tcp_port).start(
             ctx
         )
@@ -81,7 +82,6 @@ async def test_http(unused_tcp_port: int, method: str):
 
 
 @pytest.mark.parametrize("method", ["static", "dynamic"])
-@pytest.mark.asyncio
 async def test_ws(unused_tcp_port: int, method: str):
     @inject
     async def ws_root(
@@ -115,8 +115,8 @@ async def test_ws(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context() as ctx:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await AIOHTTPComponent(components=components, app=application, port=unused_tcp_port).start(
             ctx
         )
@@ -135,7 +135,6 @@ async def test_ws(unused_tcp_port: int, method: str):
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
-@pytest.mark.asyncio
 async def test_middleware(unused_tcp_port: int, method: str):
     @middleware
     async def text_replacer(request: Request, handler) -> None:
@@ -161,8 +160,8 @@ async def test_middleware(unused_tcp_port: int, method: str):
         ]
 
     async with Context() as ctx, AsyncClient() as http:
-        ctx.add_resource("foo")
-        ctx.add_resource("bar", name="another")
+        await ctx.add_resource("foo")
+        await ctx.add_resource("bar", name="another")
         await AIOHTTPComponent(
             app=application, port=unused_tcp_port, middlewares=middlewares
         ).start(ctx)
