@@ -14,7 +14,13 @@ from asgiref.typing import (
     Scope,
     WebSocketScope,
 )
-from asphalt.core import ContainerComponent, Context, resolve_reference, start_background_task
+from asphalt.core import (
+    ContainerComponent,
+    Context,
+    add_resource,
+    resolve_reference,
+    start_background_task,
+)
 from hypercorn import Config
 
 from ._utils import ensure_server_running
@@ -39,9 +45,9 @@ class AsphaltMiddleware:
         self, scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
     ) -> None:
         if scope["type"] in ("http", "websocket"):
-            async with Context() as ctx:
+            async with Context():
                 scope_type = HTTPScope if scope["type"] == "http" else WebSocketScope
-                await ctx.add_resource(scope, types=[scope_type])
+                await add_resource(scope, types=[scope_type])
                 await self.app(scope, receive, send)
         else:
             await self.app(scope, receive, send)
@@ -104,13 +110,13 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         else:
             raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
 
-    async def start(self, ctx: Context) -> None:
+    async def start(self) -> None:
         types = [ASGI3Application]
         if not isfunction(self.original_app):
             types.append(type(self.original_app))
 
-        await ctx.add_resource(self.original_app, types=types)
-        await super().start(ctx)
+        await add_resource(self.original_app, types=types)
+        await super().start()
         await self.start_server()
 
     async def start_server(self) -> None:

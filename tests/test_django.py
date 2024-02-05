@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 from asgiref.typing import ASGI3Application
-from asphalt.core import Context
+from asphalt.core import Context, add_resource, require_resource
 from httpx import AsyncClient
 
 try:
@@ -18,14 +18,14 @@ else:
 
 
 async def test_http(unused_tcp_port: int):
-    async with Context() as ctx, AsyncClient() as http:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await DjangoComponent(app=application, port=unused_tcp_port).start(ctx)
+    async with Context(), AsyncClient() as http:
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await DjangoComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = ctx.require_resource(ASGI3Application)
-        asgi_handler = ctx.require_resource(ASGIHandler)
+        asgi_app = require_resource(ASGI3Application)
+        asgi_handler = require_resource(ASGIHandler)
         assert asgi_handler is asgi_app
 
         response = await http.get(

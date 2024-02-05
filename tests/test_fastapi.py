@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, inject, require_resource, resource
+from asphalt.core import Component, Context, add_resource, inject, require_resource, resource
 from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.requests import Request
@@ -46,21 +46,21 @@ async def test_http(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             @inject
-            async def start(self, ctx: Context, app: FastAPI = resource()) -> None:
+            async def start(self, app: FastAPI = resource()) -> None:
                 app.add_api_route("/", root)
 
         components = {"myroutes": {"type": RouteComponent}}
 
-    async with Context() as ctx, AsyncClient() as http:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
-            ctx
-        )
+    async with Context(), AsyncClient() as http:
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await FastAPIComponent(
+            components=components, app=application, port=unused_tcp_port
+        ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = ctx.require_resource(ASGI3Application)
-        fastapi_app = ctx.require_resource(FastAPI)
+        asgi_app = require_resource(ASGI3Application)
+        fastapi_app = require_resource(FastAPI)
         assert fastapi_app is asgi_app
 
         response = await http.get(
@@ -100,21 +100,21 @@ async def test_ws(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             @inject
-            async def start(self, ctx: Context, app: FastAPI = resource()) -> None:
+            async def start(self, app: FastAPI = resource()) -> None:
                 app.add_api_websocket_route("/ws", ws_root)
 
         components = {"myroutes": {"type": RouteComponent}}
 
-    async with Context() as ctx:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await FastAPIComponent(components=components, app=application, port=unused_tcp_port).start(
-            ctx
-        )
+    async with Context():
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await FastAPIComponent(
+            components=components, app=application, port=unused_tcp_port
+        ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = ctx.require_resource(ASGI3Application)
-        fastapi_app = ctx.require_resource(FastAPI)
+        asgi_app = require_resource(ASGI3Application)
+        fastapi_app = require_resource(FastAPI)
         assert fastapi_app is asgi_app
 
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
@@ -134,13 +134,13 @@ async def test_missing_type_annotation():
     application = FastAPI()
     application.add_api_route("/", bad_root)
 
-    async with Context() as ctx:
+    async with Context():
         component = FastAPIComponent(app=application)
         with pytest.raises(
             TypeError,
             match="Dependency 'bad_resource' in endpoint / is missing a type annotation",
         ):
-            await component.start(ctx)
+            await component.start()
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
@@ -162,10 +162,10 @@ async def test_middleware(unused_tcp_port: int, method: str):
 
     application = FastAPI()
     application.add_api_route("/", root)
-    async with Context() as ctx, AsyncClient() as http:
+    async with Context(), AsyncClient() as http:
         await FastAPIComponent(
             port=unused_tcp_port, app=application, middlewares=middlewares
-        ).start(ctx)
+        ).start()
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(

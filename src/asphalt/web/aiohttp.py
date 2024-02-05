@@ -12,6 +12,7 @@ from aiohttp.web_runner import AppRunner, TCPSite
 from asphalt.core import (
     ContainerComponent,
     Context,
+    add_resource,
     resolve_reference,
     start_background_task,
 )
@@ -21,8 +22,8 @@ from ._utils import ensure_server_running
 
 @middleware
 async def asphalt_middleware(request: Request, handler: Callable[..., Awaitable]) -> Response:
-    async with Context() as ctx:
-        await ctx.add_resource(request, types=[Request])
+    async with Context():
+        await add_resource(request, types=[Request])
         return await handler(request)
 
 
@@ -86,12 +87,12 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
                 f"middleware must be either a coroutine function or a dict, not {middleware!r}"
             )
 
-    async def start(self, ctx: Context) -> None:
-        await ctx.add_resource(self.app)
-        await super().start(ctx)
-        await self.start_server(ctx)
+    async def start(self) -> None:
+        await add_resource(self.app)
+        await super().start()
+        await self.start_server()
 
-    async def start_server(self, ctx: Context) -> None:
+    async def start_server(self) -> None:
         """
         Start the HTTP server.
 

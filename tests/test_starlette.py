@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, inject, require_resource, resource
+from asphalt.core import Component, Context, add_resource, inject, require_resource, resource
 from httpx import AsyncClient
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -47,22 +47,22 @@ async def test_http(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             @inject
-            async def start(self, ctx: Context, app: Starlette = resource()) -> None:
+            async def start(self, *, app: Starlette = resource()) -> None:
                 app = require_resource(Starlette)
                 app.add_route("/", root)
 
         components = {"myroutes": {"type": RouteComponent}}
 
-    async with Context() as ctx, AsyncClient() as http:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
+    async with Context(), AsyncClient() as http:
+        await add_resource("foo")
+        await add_resource("bar", name="another")
         await StarletteComponent(
             components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = ctx.require_resource(ASGI3Application)
-        starlette_app = ctx.require_resource(Starlette)
+        asgi_app = require_resource(ASGI3Application)
+        starlette_app = require_resource(Starlette)
         assert starlette_app is asgi_app
 
         response = await http.get(
@@ -103,22 +103,22 @@ async def test_ws(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             @inject
-            async def start(self, ctx: Context, app: Starlette = resource()) -> None:
+            async def start(self, app: Starlette = resource()) -> None:
                 app = require_resource(Starlette)
                 app.add_websocket_route("/ws", ws_root)
 
         components = {"myroutes": {"type": RouteComponent}}
 
-    async with Context() as ctx:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
+    async with Context():
+        await add_resource("foo")
+        await add_resource("bar", name="another")
         await StarletteComponent(
             components=components, app=application, port=unused_tcp_port
-        ).start(ctx)
+        ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = ctx.require_resource(ASGI3Application)
-        starlette_app = ctx.require_resource(Starlette)
+        asgi_app = require_resource(ASGI3Application)
+        starlette_app = require_resource(Starlette)
         assert starlette_app is asgi_app
 
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
@@ -150,10 +150,10 @@ async def test_middleware(unused_tcp_port: int, method: str):
 
     application = Starlette()
     application.add_route("/", root)
-    async with Context() as ctx, AsyncClient() as http:
+    async with Context(), AsyncClient() as http:
         await StarletteComponent(
             port=unused_tcp_port, app=application, middlewares=middlewares
-        ).start(ctx)
+        ).start()
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(

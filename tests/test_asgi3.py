@@ -16,7 +16,7 @@ from asgiref.typing import (
     Scope,
     WebSocketScope,
 )
-from asphalt.core import Context, current_context, inject, resource
+from asphalt.core import Context, add_resource, current_context, inject, require_resource, resource
 from httpx import AsyncClient
 
 from asphalt.web.asgi3 import ASGIComponent
@@ -117,13 +117,13 @@ class TextReplacerMiddleware:
 
 
 async def test_http(unused_tcp_port: int):
-    async with Context() as ctx, AsyncClient() as http:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
+    async with Context(), AsyncClient() as http:
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
-        ctx.require_resource(ASGI3Application)
+        require_resource(ASGI3Application)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
@@ -138,13 +138,13 @@ async def test_http(unused_tcp_port: int):
 
 
 async def test_ws(unused_tcp_port: int):
-    async with Context() as ctx:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port).start(ctx)
+    async with Context():
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
-        ctx.require_resource(ASGI3Application)
+        require_resource(ASGI3Application)
 
         # Ensure that the application works correctly with a websocket connection
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
@@ -171,15 +171,13 @@ async def test_middleware(unused_tcp_port: int, method: str):
             }
         ]
 
-    async with Context() as ctx, AsyncClient() as http:
-        await ctx.add_resource("foo")
-        await ctx.add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start(
-            ctx
-        )
+    async with Context(), AsyncClient() as http:
+        await add_resource("foo")
+        await add_resource("bar", name="another")
+        await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start()
 
         # Ensure that the application got added as a resource
-        ctx.require_resource(ASGI3Application)
+        require_resource(ASGI3Application)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(

@@ -16,11 +16,11 @@ from asphalt.web.asgi3 import ASGIComponent
 
 class AsphaltMiddleware(BaseHTTPMiddleware):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        async with Context() as ctx:
+        async with Context():
             if scope["type"] == "http":
-                await ctx.add_resource(scope, types=[HTTPScope])
+                await add_resource(scope, types=[HTTPScope])
             elif scope["type"] == "websocket":
-                await ctx.add_resource(scope, types=[WebSocketScope])
+                await add_resource(scope, types=[WebSocketScope])
 
             await super().__call__(scope, receive, send)
 

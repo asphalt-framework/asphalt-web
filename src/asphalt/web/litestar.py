@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Context, require_resource, resolve_reference
+from asphalt.core import Context, add_resource, require_resource, resolve_reference
 from litestar import Litestar, Request
 from litestar.middleware import AbstractMiddleware
 from litestar.types import ControllerRouterHandler, Receive, Scope, Send
@@ -35,13 +35,13 @@ class AsphaltProvide:
 
 class AsphaltMiddleware(AbstractMiddleware):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        async with Context() as ctx:
+        async with Context():
             if scope["type"] == "http":
-                await ctx.add_resource(scope, types=[HTTPScope])
-                await ctx.add_resource(Request(scope))
+                await add_resource(scope, types=[HTTPScope])
+                await add_resource(Request(scope))
             elif scope["type"] == "websocket":
-                await ctx.add_resource(scope, types=[WebSocketScope])
-                await ctx.add_resource(Request(scope))
+                await add_resource(scope, types=[WebSocketScope])
+                await add_resource(Request(scope))
 
             await self.app(scope, receive, send)
 
