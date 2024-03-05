@@ -15,9 +15,9 @@ from .asgi3 import ASGIComponent
 def AsphaltMiddleware(get_response: Callable[[HttpRequest], Awaitable[HttpResponse]]):
     async def middleware(request: HttpRequest) -> HttpResponse:
         async with Context():
-            await add_resource(request)
+            add_resource(request)
             if isinstance(request, ASGIRequest):
-                await add_resource(request.scope, types=[HTTPScope])
+                add_resource(request.scope, types=[HTTPScope])
 
             return await get_response(request)
 

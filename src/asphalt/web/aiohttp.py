@@ -23,7 +23,7 @@ from ._utils import ensure_server_running
 @middleware
 async def asphalt_middleware(request: Request, handler: Callable[..., Awaitable]) -> Response:
     async with Context():
-        await add_resource(request, types=[Request])
+        add_resource(request, types=[Request])
         return await handler(request)
 
 
@@ -88,7 +88,7 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
             )
 
     async def start(self) -> None:
-        await add_resource(self.app)
+        add_resource(self.app)
         await super().start()
         await self.start_server()
 

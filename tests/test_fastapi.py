@@ -52,8 +52,8 @@ async def test_http(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context(), AsyncClient() as http:
-        await add_resource("foo")
-        await add_resource("bar", name="another")
+        add_resource("foo")
+        add_resource("bar", name="another")
         await FastAPIComponent(
             components=components, app=application, port=unused_tcp_port
         ).start()
@@ -106,8 +106,8 @@ async def test_ws(unused_tcp_port: int, method: str):
         components = {"myroutes": {"type": RouteComponent}}
 
     async with Context():
-        await add_resource("foo")
-        await add_resource("bar", name="another")
+        add_resource("foo")
+        add_resource("bar", name="another")
         await FastAPIComponent(
             components=components, app=application, port=unused_tcp_port
         ).start()

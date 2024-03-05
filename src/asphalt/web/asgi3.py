@@ -47,7 +47,7 @@ class AsphaltMiddleware:
         if scope["type"] in ("http", "websocket"):
             async with Context():
                 scope_type = HTTPScope if scope["type"] == "http" else WebSocketScope
-                await add_resource(scope, types=[scope_type])
+                add_resource(scope, types=[scope_type])
                 await self.app(scope, receive, send)
         else:
             await self.app(scope, receive, send)
@@ -115,7 +115,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         if not isfunction(self.original_app):
             types.append(type(self.original_app))
 
-        await add_resource(self.original_app, types=types)
+        add_resource(self.original_app, types=types)
         await super().start()
         await self.start_server()
 

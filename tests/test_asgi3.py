@@ -118,8 +118,8 @@ class TextReplacerMiddleware:
 
 async def test_http(unused_tcp_port: int):
     async with Context(), AsyncClient() as http:
-        await add_resource("foo")
-        await add_resource("bar", name="another")
+        add_resource("foo")
+        add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
@@ -139,8 +139,8 @@ async def test_http(unused_tcp_port: int):
 
 async def test_ws(unused_tcp_port: int):
     async with Context():
-        await add_resource("foo")
-        await add_resource("bar", name="another")
+        add_resource("foo")
+        add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
@@ -172,8 +172,8 @@ async def test_middleware(unused_tcp_port: int, method: str):
         ]
 
     async with Context(), AsyncClient() as http:
-        await add_resource("foo")
-        await add_resource("bar", name="another")
+        add_resource("foo")
+        add_resource("bar", name="another")
         await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start()
 
         # Ensure that the application got added as a resource
