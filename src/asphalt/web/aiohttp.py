@@ -14,7 +14,7 @@ from asphalt.core import (
     Context,
     add_resource,
     resolve_reference,
-    start_background_task,
+    start_service_task,
 )
 
 from ._utils import ensure_server_running
@@ -105,7 +105,5 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
         runner = AppRunner(self.app)
         await runner.setup()
         site = TCPSite(runner, host=self.host, port=self.port)
-        await start_background_task(
-            site.start, name="Aiohttp server", teardown_action=runner.cleanup
-        )
+        await start_service_task(site.start, name="Aiohttp server", teardown_action=runner.cleanup)
         await ensure_server_running(self.host, self.port)

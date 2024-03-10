@@ -19,7 +19,7 @@ from asphalt.core import (
     Context,
     add_resource,
     resolve_reference,
-    start_background_task,
+    start_service_task,
 )
 from hypercorn import Config
 
@@ -134,7 +134,7 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         shutdown_event = anyio.Event()
         from hypercorn.asyncio import serve
 
-        await start_background_task(
+        await start_service_task(
             lambda: serve(self.app, config, shutdown_trigger=shutdown_event.wait, mode="asgi"),
             name="Hypercorn server",
             teardown_action=shutdown_event.set,
