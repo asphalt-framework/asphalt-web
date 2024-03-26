@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, add_resource, inject, require_resource, resource
+from asphalt.core import Component, Context, add_resource, get_resource_nowait, inject, resource
 from fastapi import FastAPI
 from httpx import AsyncClient
 from starlette.requests import Request
@@ -28,8 +28,8 @@ async def test_http(unused_tcp_port: int, method: str):
         my_resource: str = AsphaltDepends(),
         another_resource: str = AsphaltDepends("another"),
     ) -> Response:
-        require_resource(HTTPScope)
-        require_resource(Request)
+        get_resource_nowait(HTTPScope)
+        get_resource_nowait(Request)
         return JSONResponse(
             {
                 "message": request.query_params["param"],
@@ -59,8 +59,8 @@ async def test_http(unused_tcp_port: int, method: str):
         ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = require_resource(ASGI3Application)
-        fastapi_app = require_resource(FastAPI)
+        asgi_app = get_resource_nowait(ASGI3Application)
+        fastapi_app = get_resource_nowait(FastAPI)
         assert fastapi_app is asgi_app
 
         response = await http.get(
@@ -81,7 +81,7 @@ async def test_ws(unused_tcp_port: int, method: str):
         my_resource: str = AsphaltDepends(),
         another_resource: str = AsphaltDepends("another"),
     ):
-        require_resource(WebSocketScope)
+        get_resource_nowait(WebSocketScope)
         await websocket.accept()
         message = await websocket.receive_text()
         await websocket.send_json(
@@ -113,8 +113,8 @@ async def test_ws(unused_tcp_port: int, method: str):
         ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = require_resource(ASGI3Application)
-        fastapi_app = require_resource(FastAPI)
+        asgi_app = get_resource_nowait(ASGI3Application)
+        fastapi_app = get_resource_nowait(FastAPI)
         assert fastapi_app is asgi_app
 
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:

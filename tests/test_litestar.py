@@ -7,7 +7,7 @@ from typing import Any, Dict
 import pytest
 import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, add_resource, require_resource
+from asphalt.core import Component, Context, add_resource, get_resource_nowait
 from httpx import AsyncClient
 
 try:
@@ -28,10 +28,10 @@ if not skip:
 
     @get("/", media_type=MediaType.JSON)
     async def root(request: Request) -> Dict[str, Any]:  # noqa: UP006
-        my_resource = require_resource(str)
-        another_resource = require_resource(str, "another")
-        require_resource(HTTPScope)
-        require_resource(Request)
+        my_resource = get_resource_nowait(str)
+        another_resource = get_resource_nowait(str, "another")
+        get_resource_nowait(HTTPScope)
+        get_resource_nowait(Request)
         return {
             "message": request.query_params["param"],
             "my resource": my_resource,
@@ -40,9 +40,9 @@ if not skip:
 
     @websocket_listener("/ws")
     async def ws_root(data: str) -> Dict[str, Any]:  # noqa: UP006
-        my_resource = require_resource(str)
-        another_resource = require_resource(str, "another")
-        require_resource(WebSocketScope)
+        my_resource = get_resource_nowait(str)
+        another_resource = get_resource_nowait(str, "another")
+        get_resource_nowait(WebSocketScope)
         return {
             "message": f"Hello {data}",
             "my resource": my_resource,
@@ -62,7 +62,7 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
 
         class RouteComponent(Component):
             async def start(self) -> None:
-                app = require_resource(Litestar)
+                app = get_resource_nowait(Litestar)
                 app.register(root)
 
         components["myroutes"] = {"type": RouteComponent}
@@ -75,8 +75,8 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
         ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = require_resource(ASGI3Application)
-        litestar_app = require_resource(Litestar)
+        asgi_app = get_resource_nowait(ASGI3Application)
+        litestar_app = get_resource_nowait(Litestar)
         assert litestar_app is asgi_app
 
         response = await http.get(
@@ -100,7 +100,7 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
 
         class RouteComponent(Component):
             async def start(self) -> None:
-                app = require_resource(Litestar)
+                app = get_resource_nowait(Litestar)
                 app.register(ws_root)
 
         components = {"myroutes": {"type": RouteComponent}}
@@ -113,8 +113,8 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
         ).start()
 
         # Ensure that the application got added as a resource
-        asgi_app = require_resource(ASGI3Application)
-        litestar_app = require_resource(Litestar)
+        asgi_app = get_resource_nowait(ASGI3Application)
+        litestar_app = get_resource_nowait(Litestar)
         assert litestar_app is asgi_app
 
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
@@ -168,10 +168,10 @@ async def test_dependency_injection(unused_tcp_port: int) -> None:
         },
     )
     async def root(request: Request, my_resource: str, another_resource: str) -> Dict[str, Any]:  # noqa: UP006
-        my_resource = require_resource(str)
-        another_resource = require_resource(str, "another")
-        require_resource(HTTPScope)
-        require_resource(Request)
+        my_resource = get_resource_nowait(str)
+        another_resource = get_resource_nowait(str, "another")
+        get_resource_nowait(HTTPScope)
+        get_resource_nowait(Request)
         return {
             "message": request.query_params["param"],
             "my resource": my_resource,

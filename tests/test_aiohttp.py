@@ -4,7 +4,7 @@ import json
 
 import pytest
 import websockets
-from asphalt.core import Component, Context, add_resource, inject, require_resource, resource
+from asphalt.core import Component, Context, add_resource, get_resource_nowait, inject, resource
 from httpx import AsyncClient
 
 try:
@@ -55,7 +55,7 @@ async def test_http(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             async def start(self) -> None:
-                app = require_resource(Application)
+                app = get_resource_nowait(Application)
                 app.router.add_route("GET", "/", root)
 
         components = {"myroutes": {"type": RouteComponent}}
@@ -68,7 +68,7 @@ async def test_http(unused_tcp_port: int, method: str):
         ).start()
 
         # Ensure that the application got added as a resource
-        require_resource(Application)
+        get_resource_nowait(Application)
 
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
@@ -109,7 +109,7 @@ async def test_ws(unused_tcp_port: int, method: str):
 
         class RouteComponent(Component):
             async def start(self) -> None:
-                app = require_resource(Application)
+                app = get_resource_nowait(Application)
                 app.router.add_route("GET", "/", ws_root)
 
         components = {"myroutes": {"type": RouteComponent}}
@@ -122,7 +122,7 @@ async def test_ws(unused_tcp_port: int, method: str):
         ).start()
 
         # Ensure that the application got added as a resource
-        require_resource(Application)
+        get_resource_nowait(Application)
 
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
             await ws.send("World")
@@ -167,7 +167,7 @@ async def test_middleware(unused_tcp_port: int, method: str):
         ).start()
 
         # Ensure that the application got added as a resource
-        require_resource(Application)
+        get_resource_nowait(Application)
 
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}

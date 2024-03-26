@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Context, add_resource, require_resource, resolve_reference
+from asphalt.core import Context, add_resource, get_resource_nowait, resolve_reference
 from litestar import Litestar, Request
 from litestar.middleware import AbstractMiddleware
 from litestar.types import ControllerRouterHandler, Receive, Scope, Send
@@ -30,7 +30,7 @@ class AsphaltProvide:
     name: str = "default"
 
     async def __call__(self) -> Any:
-        return require_resource(self.cls, self.name)
+        return get_resource_nowait(self.cls, self.name)
 
 
 class AsphaltMiddleware(AbstractMiddleware):

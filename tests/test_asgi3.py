@@ -16,7 +16,14 @@ from asgiref.typing import (
     Scope,
     WebSocketScope,
 )
-from asphalt.core import Context, add_resource, current_context, inject, require_resource, resource
+from asphalt.core import (
+    Context,
+    add_resource,
+    current_context,
+    get_resource_nowait,
+    inject,
+    resource,
+)
 from httpx import AsyncClient
 
 from asphalt.web.asgi3 import ASGIComponent
@@ -33,7 +40,7 @@ async def application(
     another_resource: str = resource("another"),
 ):
     if scope["type"] == "http":
-        current_context().require_resource(HTTPScope)
+        current_context().get_resource_nowait(HTTPScope)
         query = parse_qs(cast(bytes, scope["query_string"]))
         await receive()
 
@@ -63,7 +70,7 @@ async def application(
             }
         )
     elif scope["type"] == "websocket":
-        current_context().require_resource(WebSocketScope)
+        current_context().get_resource_nowait(WebSocketScope)
         await receive()  # Receive connection
         await send(  # Accept connection
             {
@@ -123,7 +130,7 @@ async def test_http(unused_tcp_port: int):
         await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
-        require_resource(ASGI3Application)
+        get_resource_nowait(ASGI3Application)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
@@ -144,7 +151,7 @@ async def test_ws(unused_tcp_port: int):
         await ASGIComponent(app=application, port=unused_tcp_port).start()
 
         # Ensure that the application got added as a resource
-        require_resource(ASGI3Application)
+        get_resource_nowait(ASGI3Application)
 
         # Ensure that the application works correctly with a websocket connection
         async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
@@ -177,7 +184,7 @@ async def test_middleware(unused_tcp_port: int, method: str):
         await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start()
 
         # Ensure that the application got added as a resource
-        require_resource(ASGI3Application)
+        get_resource_nowait(ASGI3Application)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
