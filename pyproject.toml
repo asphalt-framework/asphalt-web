@@ -106,9 +106,9 @@ testpaths = ["tests"]
 line-length = 99
 
 [tool.ruff.lint]
-select = [
+extend-select = [
     "ASYNC",        # flake8-async
-    "E", "F", "W",  # default Flake8
+    "W",            # pycodestyle warnings
     "G",            # flake8-logging-format
     "I",            # isort
     "ISC",          # flake8-implicit-str-concat
@@ -117,7 +117,7 @@ select = [
     "UP",           # pyupgrade
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["asphalt.web"]
 
 [tool.mypy]
