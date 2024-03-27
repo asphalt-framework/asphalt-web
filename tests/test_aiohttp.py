@@ -21,6 +21,11 @@ else:
     pytestmark = pytest.mark.anyio
 
 
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"
+
+
 def setup_text_replacer(app, *, text: str, replacement: str) -> None:
     @middleware
     async def text_replacer(request: Request, handler) -> None:

@@ -72,7 +72,7 @@ test = [
     "coverage >= 7",
     "pytest >= 7.4",
     "httpx",
-    "websockets",
+    "httpx-ws",
     "aiohttp >= 3.8; python_version < '3.12'",
     "Django >= 3.2; python_implementation == 'CPython'",
     "asphalt-web[asgi3,fastapi,starlette]",

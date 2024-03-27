@@ -17,6 +17,11 @@ else:
     pytestmark = pytest.mark.anyio
 
 
+@pytest.fixture
+def anyio_backend() -> str:
+    return "asyncio"
+
+
 async def test_http(unused_tcp_port: int):
     async with Context(), AsyncClient() as http:
         add_resource("foo")

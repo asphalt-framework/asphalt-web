@@ -5,11 +5,11 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 import pytest
-import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
 from asphalt.core import Component, Context, add_resource, get_resource_nowait, inject, resource
 from fastapi import FastAPI
 from httpx import AsyncClient
+from httpx_ws import aconnect_ws
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse, Response
 from starlette.websockets import WebSocket
@@ -117,9 +117,9 @@ async def test_ws(unused_tcp_port: int, method: str):
         fastapi_app = get_resource_nowait(FastAPI)
         assert fastapi_app is asgi_app
 
-        async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
-            await ws.send("World")
-            response = json.loads(await ws.recv())
+        async with aconnect_ws(f"http://localhost:{unused_tcp_port}/ws") as ws:
+            await ws.send_text("World")
+            response = json.loads(await ws.receive_text())
             assert response == {
                 "message": "Hello World",
                 "my resource": "foo",

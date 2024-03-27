@@ -6,7 +6,6 @@ from typing import Any, cast
 from urllib.parse import parse_qs
 
 import pytest
-import websockets
 from asgiref.typing import (
     ASGI3Application,
     ASGIReceiveCallable,
@@ -25,6 +24,7 @@ from asphalt.core import (
     resource,
 )
 from httpx import AsyncClient
+from httpx_ws import aconnect_ws
 
 from asphalt.web.asgi3 import ASGIComponent
 
@@ -39,7 +39,15 @@ async def application(
     my_resource: str = resource(),
     another_resource: str = resource("another"),
 ):
-    if scope["type"] == "http":
+    if scope["type"] == "lifespan":
+        while True:
+            message = await receive()
+            if message["type"] == "lifespan.startup":
+                await send({"type": "lifespan.startup.complete"})
+            elif message["type"] == "lifespan.shutdown":
+                await send({"type": "lifespan.shutdown.complete"})
+                return
+    elif scope["type"] == "http":
         current_context().get_resource_nowait(HTTPScope)
         query = parse_qs(cast(bytes, scope["query_string"]))
         await receive()
@@ -154,9 +162,9 @@ async def test_ws(unused_tcp_port: int):
         get_resource_nowait(ASGI3Application)
 
         # Ensure that the application works correctly with a websocket connection
-        async with websockets.connect(f"ws://localhost:{unused_tcp_port}") as ws:
-            await ws.send("World")
-            response = json.loads(await ws.recv())
+        async with aconnect_ws(f"http://localhost:{unused_tcp_port}/ws") as ws:
+            await ws.send_text("World")
+            response = json.loads(await ws.receive_text())
             assert response == {
                 "message": "Hello World",
                 "my resource": "foo",

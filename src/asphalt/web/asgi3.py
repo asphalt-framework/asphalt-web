@@ -6,6 +6,7 @@ from inspect import isfunction
 from typing import Any, Generic, TypeVar
 
 import anyio
+import sniffio
 from asgiref.typing import (
     ASGI3Application,
     ASGIReceiveCallable,
@@ -132,7 +133,10 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         config = Config()
         config.bind = [f"{self.host}:{self.port}"]
         shutdown_event = anyio.Event()
-        from hypercorn.asyncio import serve
+        if sniffio.current_async_library() == "trio":
+            from hypercorn.trio import serve
+        else:
+            from hypercorn.asyncio import serve
 
         await start_service_task(
             lambda: serve(self.app, config, shutdown_trigger=shutdown_event.wait, mode="asgi"),

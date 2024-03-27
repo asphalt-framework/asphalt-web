@@ -5,10 +5,10 @@ from collections.abc import Callable, Sequence
 from typing import Any, Dict
 
 import pytest
-import websockets
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
 from asphalt.core import Component, Context, add_resource, get_resource_nowait
 from httpx import AsyncClient
+from httpx_ws import aconnect_ws
 
 try:
     from litestar import Litestar, MediaType, Request, get, websocket_listener
@@ -117,9 +117,9 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
         litestar_app = get_resource_nowait(Litestar)
         assert litestar_app is asgi_app
 
-        async with websockets.connect(f"ws://localhost:{unused_tcp_port}/ws") as ws:
-            await ws.send("World")
-            response = json.loads(await ws.recv())
+        async with aconnect_ws(f"http://localhost:{unused_tcp_port}/ws") as ws:
+            await ws.send_text("World")
+            response = json.loads(await ws.receive_text())
             assert response == {
                 "message": "Hello World",
                 "my resource": "foo",
