@@ -16,7 +16,7 @@ from asgiref.typing import (
     WebSocketScope,
 )
 from asphalt.core import (
-    ContainerComponent,
+    Component,
     Context,
     add_resource,
     resolve_reference,
@@ -54,7 +54,7 @@ class AsphaltMiddleware:
             await self.app(scope, receive, send)
 
 
-class ASGIComponent(ContainerComponent, Generic[T_Application]):
+class ASGIComponent(Component, Generic[T_Application]):
     """
     A component that serves the given ASGI 3.0 application via Hypercorn.
 
@@ -68,14 +68,12 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: T_Application | str,
         host: str = "127.0.0.1",
         port: int = 8000,
         middlewares: Sequence[Callable[..., ASGI3Application] | dict[str, Any]] = (),
     ) -> None:
-        super().__init__(components)
         self.app: T_Application = resolve_reference(app)
         self.original_app = self.app
         self.host = host
@@ -84,6 +82,12 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
         self.add_middleware(self.setup_asphalt_middleware)
         for middleware in middlewares:
             self.add_middleware(middleware)
+
+        types = [ASGI3Application]
+        if not isfunction(self.original_app):
+            types.append(type(self.original_app))
+
+        add_resource(self.original_app, types=types)
 
     def setup_asphalt_middleware(self, app: T_Application) -> ASGI3Application:
         return AsphaltMiddleware(app)
@@ -112,12 +116,6 @@ class ASGIComponent(ContainerComponent, Generic[T_Application]):
             raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
 
     async def start(self) -> None:
-        types = [ASGI3Application]
-        if not isfunction(self.original_app):
-            types.append(type(self.original_app))
-
-        add_resource(self.original_app, types=types)
-        await super().start()
         await self.start_server()
 
     async def start_server(self) -> None:

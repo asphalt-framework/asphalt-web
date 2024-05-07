@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 import pytest
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, add_resource, get_resource_nowait
+from asphalt.core import Component, Context, add_resource, get_resource_nowait, start_component
 from httpx import AsyncClient
 from httpx_ws import aconnect_ws
 
@@ -70,9 +70,8 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(
-            components=components, port=unused_tcp_port, route_handlers=route_handlers
-        ).start()
+        component = LitestarComponent(port=unused_tcp_port, route_handlers=route_handlers)
+        await start_component(component, components)
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -108,9 +107,8 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(
-            components=components, port=unused_tcp_port, route_handlers=route_handlers
-        ).start()
+        component = LitestarComponent(port=unused_tcp_port, route_handlers=route_handlers)
+        await start_component(component, components)
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)

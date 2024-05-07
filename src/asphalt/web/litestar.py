@@ -76,7 +76,6 @@ class LitestarComponent(ASGIComponent[Litestar]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         host: str = "127.0.0.1",
         port: int = 8000,
@@ -88,7 +87,7 @@ class LitestarComponent(ASGIComponent[Litestar]):
         config_.setdefault("debug", __debug__)
         config_["logging_config"] = None
         app = Litestar(**config_)
-        super().__init__(components, app=app, middlewares=middlewares, host=host, port=port)
+        super().__init__(app=app, middlewares=middlewares, host=host, port=port)
 
         for item in route_handlers:
             if isinstance(item, str):

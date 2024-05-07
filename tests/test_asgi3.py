@@ -22,6 +22,7 @@ from asphalt.core import (
     get_resource_nowait,
     inject,
     resource,
+    start_component,
 )
 from httpx import AsyncClient
 from httpx_ws import aconnect_ws
@@ -135,7 +136,8 @@ async def test_http(unused_tcp_port: int):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port).start()
+        component = ASGIComponent(app=application, port=unused_tcp_port)
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(ASGI3Application)

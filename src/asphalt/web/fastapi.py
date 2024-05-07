@@ -62,7 +62,6 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: FastAPI | str | None = None,
         host: str = "127.0.0.1",
@@ -72,7 +71,6 @@ class FastAPIComponent(ASGIComponent[FastAPI]):
     ) -> None:
         debug = debug if isinstance(debug, bool) else __debug__
         super().__init__(
-            components,
             app=app or FastAPI(debug=debug),
             host=host,
             port=port,

@@ -6,7 +6,15 @@ from typing import Any
 
 import pytest
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, add_resource, get_resource_nowait, inject, resource
+from asphalt.core import (
+    Component,
+    Context,
+    add_resource,
+    get_resource_nowait,
+    inject,
+    resource,
+    start_component,
+)
 from fastapi import FastAPI
 from httpx import AsyncClient
 from httpx_ws import aconnect_ws
@@ -54,9 +62,8 @@ async def test_http(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await FastAPIComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start()
+        component = FastAPIComponent(app=application, port=unused_tcp_port)
+        await start_component(component, components)
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -108,9 +115,8 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await FastAPIComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start()
+        component = FastAPIComponent(app=application, port=unused_tcp_port)
+        await start_component(component, components)
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -140,7 +146,7 @@ async def test_missing_type_annotation():
             TypeError,
             match="Dependency 'bad_resource' in endpoint / is missing a type annotation",
         ):
-            await component.start()
+            await start_component(component)
 
 
 @pytest.mark.parametrize("method", ["direct", "dict"])
@@ -163,9 +169,10 @@ async def test_middleware(unused_tcp_port: int, method: str):
     application = FastAPI()
     application.add_api_route("/", root)
     async with Context(), AsyncClient() as http:
-        await FastAPIComponent(
-            port=unused_tcp_port, app=application, middlewares=middlewares
-        ).start()
+        component = FastAPIComponent(
+            app=application, port=unused_tcp_port, middlewares=middlewares
+        )
+        await start_component(component)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
