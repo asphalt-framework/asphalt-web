@@ -73,7 +73,7 @@ test = [
     "pytest >= 7.4",
     "httpx",
     "httpx-ws",
-    "aiohttp >= 3.8; python_version < '3.12'",
+    "aiohttp >= 3.8",
     "Django >= 3.2; python_implementation == 'CPython'",
     "asphalt-web[asgi3,fastapi,starlette]",
     "litestar >= 2.5.5; python_implementation == 'CPython'",
