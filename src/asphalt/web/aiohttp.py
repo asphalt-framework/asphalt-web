@@ -53,8 +53,6 @@ class AIOHTTPComponent(Component):
         for mw in middlewares:
             self.add_middleware(mw)
 
-        add_resource(self.app)
-
     def add_middleware(
         self, middleware: Callable[..., Coroutine[Any, Any, Any]] | dict[str, Any]
     ) -> None:
@@ -84,6 +82,9 @@ https://docs.aiohttp.org/en/stable/web_advanced.html#aiohttp-web-middlewares
             raise TypeError(
                 f"middleware must be either a coroutine function or a dict, not {middleware!r}"
             )
+
+    async def prepare(self) -> None:
+        add_resource(self.app)
 
     async def start(self) -> None:
         await self.start_server()

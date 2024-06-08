@@ -158,7 +158,8 @@ async def test_ws(unused_tcp_port: int):
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port).start()
+        component = ASGIComponent(app=application, port=unused_tcp_port)
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(ASGI3Application)
@@ -191,7 +192,8 @@ async def test_middleware(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares).start()
+        component = ASGIComponent(app=application, port=unused_tcp_port, middlewares=middlewares)
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(ASGI3Application)

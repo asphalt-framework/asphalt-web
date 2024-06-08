@@ -83,12 +83,6 @@ class ASGIComponent(Component, Generic[T_Application]):
         for middleware in middlewares:
             self.add_middleware(middleware)
 
-        types = [ASGI3Application]
-        if not isfunction(self.original_app):
-            types.append(type(self.original_app))
-
-        add_resource(self.original_app, types=types)
-
     def setup_asphalt_middleware(self, app: T_Application) -> ASGI3Application:
         return AsphaltMiddleware(app)
 
@@ -114,6 +108,13 @@ class ASGIComponent(Component, Generic[T_Application]):
             self.app = middleware(self.app)
         else:
             raise TypeError(f"middleware must be either a callable or a dict, not {middleware!r}")
+
+    async def prepare(self) -> None:
+        types = [ASGI3Application]
+        if not isfunction(self.original_app):
+            types.append(type(self.original_app))
+
+        add_resource(self.original_app, types=types)
 
     async def start(self) -> None:
         await self.start_server()

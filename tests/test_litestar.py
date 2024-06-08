@@ -144,9 +144,10 @@ async def test_middleware(unused_tcp_port: int, method: str) -> None:
         return "Hello World"
 
     async with Context(), AsyncClient() as http:
-        await LitestarComponent(
+        component = LitestarComponent(
             port=unused_tcp_port, middlewares=middlewares, route_handlers=[root]
-        ).start()
+        )
+        await start_component(component)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
@@ -179,7 +180,8 @@ async def test_dependency_injection(unused_tcp_port: int) -> None:
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(port=unused_tcp_port, route_handlers=[root]).start()
+        component = LitestarComponent(port=unused_tcp_port, route_handlers=[root])
+        await start_component(component)
 
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}

@@ -77,7 +77,10 @@ async def test_http(unused_tcp_port: int, method: str):
         add_resource("foo")
         add_resource("bar", name="another")
         component = AIOHTTPComponent(app=application, port=unused_tcp_port)
-        await start_component(component, components)
+        for alias, kwargs in components.items():
+            component.add_component(alias, **kwargs)
+
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)
@@ -129,9 +132,11 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start()
+        component = AIOHTTPComponent(app=application, port=unused_tcp_port)
+        for alias, kwargs in components.items():
+            component.add_component(alias, **kwargs)
+
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)
@@ -174,9 +179,10 @@ async def test_middleware(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await AIOHTTPComponent(
+        component = AIOHTTPComponent(
             app=application, port=unused_tcp_port, middlewares=middlewares
-        ).start()
+        )
+        await start_component(component)
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)
