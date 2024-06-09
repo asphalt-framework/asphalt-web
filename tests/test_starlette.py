@@ -64,8 +64,10 @@ async def test_http(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        component = StarletteComponent(app=application, port=unused_tcp_port)
-        await start_component(component, components)
+        await start_component(
+            StarletteComponent,
+            {"components": components, "app": application, "port": unused_tcp_port},
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -119,8 +121,10 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        component = StarletteComponent(app=application, port=unused_tcp_port)
-        await start_component(component, components)
+        await start_component(
+            StarletteComponent,
+            {"components": components, "app": application, "port": unused_tcp_port},
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -157,10 +161,10 @@ async def test_middleware(unused_tcp_port: int, method: str):
     application = Starlette()
     application.add_route("/", root)
     async with Context(), AsyncClient() as http:
-        component = StarletteComponent(
-            app=application, port=unused_tcp_port, middlewares=middlewares
+        await start_component(
+            StarletteComponent,
+            {"app": application, "port": unused_tcp_port, "middlewares": middlewares},
         )
-        await start_component(component)
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
