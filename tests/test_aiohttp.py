@@ -4,7 +4,15 @@ import json
 
 import pytest
 import websockets
-from asphalt.core import Component, Context, add_resource, get_resource_nowait, inject, resource
+from asphalt.core import (
+    Component,
+    Context,
+    add_resource,
+    get_resource_nowait,
+    inject,
+    resource,
+    start_component,
+)
 from httpx import AsyncClient
 
 try:
@@ -68,9 +76,14 @@ async def test_http(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start()
+        await start_component(
+            AIOHTTPComponent,
+            {
+                "components": components,
+                "app": application,
+                "port": unused_tcp_port,
+            },
+        )
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)
@@ -122,9 +135,14 @@ async def test_ws(unused_tcp_port: int, method: str):
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            components=components, app=application, port=unused_tcp_port
-        ).start()
+        await start_component(
+            AIOHTTPComponent,
+            {
+                "components": components,
+                "app": application,
+                "port": unused_tcp_port,
+            },
+        )
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)
@@ -167,9 +185,14 @@ async def test_middleware(unused_tcp_port: int, method: str):
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await AIOHTTPComponent(
-            app=application, port=unused_tcp_port, middlewares=middlewares
-        ).start()
+        await start_component(
+            AIOHTTPComponent,
+            {
+                "middlewares": middlewares,
+                "app": application,
+                "port": unused_tcp_port,
+            },
+        )
 
         # Ensure that the application got added as a resource
         get_resource_nowait(Application)

@@ -46,7 +46,6 @@ class StarletteComponent(ASGIComponent[Starlette]):
 
     def __init__(
         self,
-        components: dict[str, dict[str, Any] | None] | None = None,
         *,
         app: Starlette | None = None,
         host: str = "127.0.0.1",
@@ -56,7 +55,6 @@ class StarletteComponent(ASGIComponent[Starlette]):
     ) -> None:
         debug = debug if isinstance(debug, bool) else __debug__
         super().__init__(
-            components,
             app=app or Starlette(debug=debug),
             host=host,
             port=port,

@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 import pytest
 from asgiref.typing import ASGI3Application, HTTPScope, WebSocketScope
-from asphalt.core import Component, Context, add_resource, get_resource_nowait
+from asphalt.core import Component, Context, add_resource, get_resource_nowait, start_component
 from httpx import AsyncClient
 from httpx_ws import aconnect_ws
 
@@ -70,9 +70,10 @@ async def test_http(unused_tcp_port: int, method: str) -> None:
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(
-            components=components, port=unused_tcp_port, route_handlers=route_handlers
-        ).start()
+        await start_component(
+            LitestarComponent,
+            {"components": components, "port": unused_tcp_port, "route_handlers": route_handlers},
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -108,9 +109,10 @@ async def test_ws(unused_tcp_port: int, method: str) -> None:
     async with Context():
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(
-            components=components, port=unused_tcp_port, route_handlers=route_handlers
-        ).start()
+        await start_component(
+            LitestarComponent,
+            {"components": components, "port": unused_tcp_port, "route_handlers": route_handlers},
+        )
 
         # Ensure that the application got added as a resource
         asgi_app = get_resource_nowait(ASGI3Application)
@@ -146,9 +148,10 @@ async def test_middleware(unused_tcp_port: int, method: str) -> None:
         return "Hello World"
 
     async with Context(), AsyncClient() as http:
-        await LitestarComponent(
-            port=unused_tcp_port, middlewares=middlewares, route_handlers=[root]
-        ).start()
+        await start_component(
+            LitestarComponent,
+            {"port": unused_tcp_port, "middlewares": middlewares, "route_handlers": [root]},
+        )
 
         # Ensure that the application responds correctly to an HTTP request
         response = await http.get(
@@ -181,7 +184,9 @@ async def test_dependency_injection(unused_tcp_port: int) -> None:
     async with Context(), AsyncClient() as http:
         add_resource("foo")
         add_resource("bar", name="another")
-        await LitestarComponent(port=unused_tcp_port, route_handlers=[root]).start()
+        await start_component(
+            LitestarComponent, {"port": unused_tcp_port, "route_handlers": [root]}
+        )
 
         response = await http.get(
             f"http://127.0.0.1:{unused_tcp_port}", params={"param": "Hello World"}
